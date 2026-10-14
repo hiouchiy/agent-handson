@@ -1,7 +1,7 @@
 """見込み顧客のスコアリングエージェント（LangGraph + MLflow ResponsesAgent）。
 
 入力: 企業特性の JSON（user メッセージの本文）。対象企業の会社IDは custom_inputs.company_id で指定する
-      （指定がなければ企業特性の company_id を使う）。
+      （指定がなければ企業特性の company_id を使う）。企業特性の JSON がない入力には、エラーにせず使い方を返す。
       custom_inputs.save_history が true のときだけ、採点の結果を Managed Agent Memory に書き込む。
 出力: 本文（評価コメント＋```json```）と custom_outputs.score_result（構造化したスコア）。
 
@@ -300,6 +300,20 @@ def _request_text(request: ResponsesAgentRequest) -> str:
     return "\n".join(texts)
 
 
+USAGE_MESSAGE = """このエージェントは、法人向けセキュリティサービスの見込み顧客を、企業特性をもとに 0〜100 点と Tier（A/B/C）で採点します。
+採点したい会社の企業特性を、次のような JSON で送ってください（company_id は必須です）。
+
+```json
+{"company_id": "T001", "company_name": "北陸ガスネットワーク株式会社", "industry": "ガス",
+ "is_critical_infra": true, "regulated": true, "legacy_scale": "高", "security_staffing": "逼迫",
+ "size_class": "大", "public_exposure": "中",
+ "recent_trigger": "2026年4月、供給管理システムの未修正の脆弱性を外部から指摘され、緊急点検を実施",
+ "existing_relationship": "取引なし（新規）",
+ "key_facts": ["従業員 約8,200人", "供給管理の制御系を長期運用", "セキュリティ担当は数名で兼務が多い"],
+ "summary": "重要インフラ×古い制御系×直近の外部指摘。"}
+```"""
+
+
 class ScoringAgent(ResponsesAgent):
     def __init__(self):
         self.graph = build_graph()
@@ -310,7 +324,9 @@ class ScoringAgent(ResponsesAgent):
         # ジョブ・評価は custom_inputs で会社IDを渡す。Review App のチャットからは渡せないので、企業特性の company_id を使う
         company_id = str(ci.get("company_id") or characteristics_of(text).get("company_id") or "").strip()
         if not company_id:
-            raise ValueError("会社IDがありません（custom_inputs.company_id か、企業特性の company_id を指定してください）")
+            # 企業特性の JSON がない入力（Review App で普通に質問した場合など）は、エラーにせず使い方を返す
+            item = self.create_text_output_item(text=USAGE_MESSAGE, id=str(uuid.uuid4()))
+            return ResponsesAgentResponse(output=[item], custom_outputs={"score_result": None})
         out = self.graph.invoke({"company_id": company_id, "text": text,
                                  "save_history": bool(ci.get("save_history")), "results": {}})
         sr = out["score_result"]

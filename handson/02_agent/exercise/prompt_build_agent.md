@@ -53,6 +53,8 @@ memory.py と agent.py はエージェント本体なので、普通の Python �
    - LLM は今日の日付を知らないので、各観点の入力に「今日の日付」（日本時間）を入れる。
    - LLM の出力からは ```json フェンスの JSON を取り出す。推論ブロック付きの応答（content がリスト）にも対応する。
    - ResponsesAgent の predict: 会社IDは custom_inputs.company_id（なければ企業特性の company_id）。
+     どちらもない（企業特性の JSON がない。Review App で普通に質問された場合など）ときは、エラーにせず、
+     このエージェントが何をするかの説明と、入力の例（企業特性の JSON）を本文で返し、custom_outputs.score_result は null にする。
      出力は本文（コメント＋```json フェンスの score_result）と custom_outputs.score_result。
      predict_stream は predict の結果を 1 回で返すだけでよい。
    - 先頭で mlflow.langchain.autolog() を呼び、最後に mlflow.models.set_model(AGENT) で登録する（model-from-code）。
