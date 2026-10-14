@@ -15,11 +15,11 @@ Databricks ノートブックを handson/my_work/03_evaluate.py として作っ�
   トレースを読むため、環境変数 MLFLOW_TRACING_SQL_WAREHOUSE_ID に _config.py の WAREHOUSE_ID を入れる。
 - handson/03_evaluation/eval_dataset.json を、mlflow.genai.datasets で Unity Catalog の評価データセット
   （_config.py の FQ の中の scoring_eval_dataset）として登録する。inputs は company_id と characteristics_json、
-  expectations は JSON の expectations をそのまま使う。すでにあれば merge_records で更新する。
-- スコアラーは README の表の 6 つ。コードのスコアラーは mlflow.genai.scorers の @scorer で書き、
-  期待値がない評価データでは None を返して判定しない。理由（rationale）には、実際の値と期待値を書く。
-- meets_guidelines は MLflow 組み込みの ExpectationsGuidelines を使う。ジャッジには、出力を
-  {"score_result": ...} の JSON の文字列にして渡す（dict のままだと中の項目を読めないことがある）。
+  expectations は JSON の expectations をそのまま使う。前の内容が混ざらないよう、すでにあれば消してから作り直す。
+- スコアラーは README の表の 4 つ。コードのスコアラーは mlflow.genai.scorers の @scorer で書き、
+  理由（rationale）には、実際の値と期待値を書く。
+- meets_expected_points は MLflow 組み込みの ExpectationsGuidelines を使い、期待値の expected_points を guidelines として渡す。
+  ジャッジには、出力を {"score_result": ...} の JSON の文字列にして渡す（dict のままだと中の項目を読めないことがある）。
 - predict_fn は、評価データの inputs を受け取り、エージェントの predict を呼んで
   {"response": 本文, "score_result": custom_outputs.score_result} を返す。
 - mlflow.genai.evaluate で評価し、スコアラーごとの平均を表示する。

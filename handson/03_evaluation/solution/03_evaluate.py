@@ -43,14 +43,13 @@ print("採点基準の版:", rubric.RUBRIC_VERSION, "/ エージェント:", AGE
 
 # MAGIC %md
 # MAGIC ## 1. 評価データセットを登録する
-# MAGIC 1 件 = **入力**（企業特性）＋**期待値**（業務部門が期待する答え）。期待値は件ごとに見たい観点だけを書きます。
+# MAGIC 1 件 = **入力**（企業特性）＋**期待値**（業務部門が考える、その会社の「あるべき答え」）。
+# MAGIC 期待値は、どの評価データでも同じ 2 項目を書きます。
 # MAGIC
-# MAGIC | 期待値のキー | 意味 |
+# MAGIC | 期待値のキー | 書くこと |
 # MAGIC |---|---|
-# MAGIC | `expected_tier` | 期待する Tier |
-# MAGIC | `expected_adjustment_min` / `_max` | 関係性の補正の期待する範囲 |
-# MAGIC | `expected_axis_levels` | 観点ごとの期待する段階（例: `{"timing": 4}`） |
-# MAGIC | `guidelines` | 文章で書いた合格条件（LLM ジャッジが判定する） |
+# MAGIC | `expected_tier` | あるべき Tier（A / B / C） |
+# MAGIC | `expected_points` | あるべき答えのポイント（文章の箇条書き。点数・段階・次のアクションなど、確かめたいことを書く） |
 
 # COMMAND ----------
 
@@ -61,20 +60,22 @@ records = [{"inputs": {"company_id": r["company_id"], "characteristics_json": r[
             "expectations": r["expectations"]} for r in rows]
 
 DATASET_TABLE = f"{FQ}.scoring_eval_dataset"
+# eval_dataset.json を正とし、毎回作り直す（前の内容が残って混ざらないようにする）
 try:
-    dataset = datasets.get_dataset(name=DATASET_TABLE)
+    datasets.delete_dataset(name=DATASET_TABLE)
 except Exception:
-    dataset = datasets.create_dataset(name=DATASET_TABLE)
-dataset = dataset.merge_records(records)
+    pass  # まだない
+dataset = datasets.create_dataset(name=DATASET_TABLE).merge_records(records)
 display(dataset.to_df())
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC ## 2. スコアラー
-# MAGIC - **形式のチェック（コード）**: どの評価データにも使う。エージェントの出力が仕様どおりか
-# MAGIC - **期待値との比較（コード）**: 評価データに期待値があるときだけ判定する
-# MAGIC - **LLM ジャッジ**: 評価データの `guidelines`（文章の合格条件）を満たしているか
+# MAGIC どの評価データにも、同じ 4 つのスコアラーを使います。
+# MAGIC - **形式のチェック（コード）**: エージェントの出力が仕様どおりか（`output_schema_valid`・`axis_levels_valid`）
+# MAGIC - **Tier（コード）**: あるべき Tier と同じか（`tier_matches`）
+# MAGIC - **ポイント（LLM ジャッジ）**: あるべき答えのポイントを、すべて満たしているか（`meets_expected_points`）
 
 # COMMAND ----------
 
@@ -109,53 +110,25 @@ def axis_levels_valid(outputs):
 
 @scorer
 def tier_matches(outputs, expectations):
-    exp = (expectations or {}).get("expected_tier")
-    if not exp:
-        return None  # この評価データでは見ない
+    """あるべき Tier と同じか。"""
+    exp = expectations["expected_tier"]
     tier = _sr(outputs).get("tier")
-    return Feedback(value=tier == exp, rationale=f"結果 {tier} / 期待 {exp}（{_sr(outputs).get('score')} 点）")
+    return Feedback(value=tier == exp, rationale=f"結果 {tier}（{_sr(outputs).get('score')} 点）/ 期待 {exp}")
+
+
+_points_judge = ExpectationsGuidelines()
 
 
 @scorer
-def adjustment_in_expected_range(outputs, expectations):
-    lo, hi = (expectations or {}).get("expected_adjustment_min"), (expectations or {}).get("expected_adjustment_max")
-    if lo is None or hi is None:
-        return None
-    sr = _sr(outputs)
-    adj = sr.get("relationship_adjustment")
-    detail = sr.get("adjustment_detail") or {}
-    return Feedback(value=isinstance(adj, int) and lo <= adj <= hi,
-                    rationale=f"補正 {adj}（段階 {detail.get('level')}）/ 期待 {lo}〜{hi}。根拠: {detail.get('evidence')}")
-
-
-@scorer
-def axis_levels_match(outputs, expectations):
-    exp = (expectations or {}).get("expected_axis_levels")
-    if not exp:
-        return None
-    details = _sr(outputs).get("axis_details") or {}
-    got = {k: (details.get(k) or {}).get("level") for k in exp}
-    evidence = {k: (details.get(k) or {}).get("evidence") for k in exp}
-    return Feedback(value=got == exp, rationale=f"結果 {got} / 期待 {exp}。根拠: {evidence}")
-
-
-_guidelines_judge = ExpectationsGuidelines()
-
-
-@scorer
-def meets_guidelines(inputs, outputs, expectations):
-    """評価データの guidelines（文章の合格条件）を満たしているかを LLM ジャッジで判定する。"""
-    guidelines = (expectations or {}).get("guidelines")
-    if not guidelines:
-        return None
+def meets_expected_points(inputs, outputs, expectations):
+    """あるべき答えのポイント（expected_points）を、すべて満たしているかを LLM ジャッジで判定する。"""
     # 採点結果は JSON の文字列にして渡す（dict のままだと、ジャッジが中の項目を読めないことがあった）
-    fb = _guidelines_judge(inputs=inputs, outputs=json.dumps({"score_result": _sr(outputs)}, ensure_ascii=False),
-                           expectations={"guidelines": guidelines})
+    fb = _points_judge(inputs=inputs, outputs=json.dumps({"score_result": _sr(outputs)}, ensure_ascii=False),
+                       expectations={"guidelines": expectations["expected_points"]})
     return Feedback(value=fb.feedback.value, rationale=fb.rationale)
 
 
-SCORERS = [output_schema_valid, axis_levels_valid, tier_matches, adjustment_in_expected_range,
-           axis_levels_match, meets_guidelines]
+SCORERS = [output_schema_valid, axis_levels_valid, tier_matches, meets_expected_points]
 
 # COMMAND ----------
 
