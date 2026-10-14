@@ -7,72 +7,75 @@
 
 ## 1 回目: 設計を確かめる
 
-```
-handson/README.md の「スコアリングエージェントの仕様」を満たすエージェントを、LangGraph で作りたいです。
-採点基準は handson/02_agent/solution/rubric.py をそのまま使います（handson/my_work/rubric.py にコピーしてください）。
-rubric.py にある関数（axis_prompt・adjustment_prompt・SUMMARY_PROMPT・axis_result_problem・
-adjustment_result_problem・assemble_score_result）を読み、次の処理の流れでグラフを設計してください。
-まだコードは書かず、ノードと辺の一覧、状態（State）の項目、各ノードの入出力を表で示してください。
+**このプロンプトで頼んでいること**: エージェントの処理の流れ（LangGraph のグラフ）を、コードを書く前に設計して見せてもらう。
 
-処理の流れ:
-1. prepare: AI Search で過去の受注事例を 1 回だけ検索する（検索語は企業特性の industry・summary・recent_trigger・
-   key_facts から作る）。Managed Agent Memory から、共通ルール（scope "shared"）、観点別のルール（scope "rubric_<観点>"）、
-   会社別の記憶（scope "<会社ID>"）を読む。
-2. score_axis: 5 観点と関係性の補正の 6 つを、LangGraph の Send で同時に採点する。各観点には、その観点のプロンプト・
-   企業特性・事例・その観点に関係する記憶だけを渡す（補正には企業特性と会社別の記憶だけ）。LLM の出力を
-   axis_result_problem / adjustment_result_problem で確かめ、問題があれば理由を伝えて 1 回だけやり直させる。
-3. 6 つがそろったら 1 回だけ分岐する: どれかが基準に合わなければ fail（点数を出さず axis_errors を返す）、合えば summarize。
-4. summarize: 確定した点数を変えずに、SUMMARY_PROMPT でコメント・次のアクション・根拠を書かせる。
-5. assemble: assemble_score_result で合計・Tier・確からしさを計算する（LLM に計算させない）。
-6. save_history: custom_inputs.save_history が true のときだけ、採点の結果を会社別の記憶に書き込む。
+```
+## やりたいこと
+handson/README.md の「スコアリングエージェントの仕様」を満たすエージェントを、LangGraph で作りたいです。
+まずはコードを書かずに、グラフの設計を見せてください。
+
+## 処理の流れ
+1. prepare: AI Search で過去の受注事例を 1 回だけ検索する。Managed Agent Memory から、共通ルール（scope "shared"）・
+   観点別のルール（scope "rubric_<観点>"）・会社別の記憶（scope "<会社ID>"）を読む
+2. score_axis: 5 観点と関係性の補正の 6 つを、LangGraph の Send で同時に採点する。
+   段階と点数が基準に合わなければ、理由を伝えて 1 回だけやり直させる
+3. 6 つがそろったら分岐する: どれかが基準に合わなければ fail（点数を出さない）、合えば summarize
+4. summarize: 確定した点数を変えずに、評価コメント・次のアクション・根拠を書かせる
+5. assemble: 合計・Tier・確からしさをプログラムで計算する（LLM に計算させない）
+6. save_history: custom_inputs.save_history が true のときだけ、採点の結果を会社別の記憶に書き込む
+
+## 決まりごと
+- 採点基準は handson/02_agent/solution/rubric.py をそのまま使う（handson/my_work/rubric.py にコピーする）。
+  rubric.py の関数（プロンプトを作る関数・出力を確かめる関数・合計を計算する関数）を使って組み立てる
+
+## できたら
+ノードと辺の一覧、状態（State）の項目、各ノードの入出力を、表にして見せてください。
 ```
 
 ## 2 回目: 作ってもらう
 
+**このプロンプトで頼んでいること**: 1 回目の設計で、エージェント本体（Python ファイル 2 つ）と、動作確認のノートブックを作ってもらう。
+
 ```
-その設計で、次の 3 つのファイルを handson/my_work/ に作ってください。
-memory.py と agent.py はエージェント本体なので、普通の Python ファイルにします（先頭に "# Databricks notebook source" を
-付けない。Model Serving にもこのまま載せる）。02_try_agent.py はそれを読み込んで動かすノートブックにします。
+## やりたいこと
+さきほどの設計で、エージェントを作ってください。
 
-1. memory.py（Managed Agent Memory の読み書き。Python ファイル）
-   - Memory は Unity Catalog の Memory Store（名前は _config.py の MEMORY_STORE）。REST API を使う:
-     一覧 GET /api/2.1/unity-catalog/memory-stores/<store>/entries?scope=<scope>（本文は返らない）、
-     本文 GET /api/2.1/unity-catalog/memory-stores/<store>/entries:get?scope=<scope>&path=<path>、
-     書き込み POST /api/2.1/unity-catalog/memory-stores/<store>/entries?scope=<scope>（body に path・contents・description）。
-   - read(ws, store, scope) は、その scope の記憶を全部読んで本文をつなげて返す（なければ空文字）。
-   - 認証: Model Serving の中（環境変数 IS_IN_DB_MODEL_SERVING_ENV が "true"）では、呼び出したユーザー本人の資格情報
-     （OBO）を使う。トークンは mlflowserving.scoring_server.agent_utils の fetch_obo_token() でリクエストごとに取り、
-     databricks-sdk の CredentialsStrategy を実装したクラスで、そのリクエスト専用の WorkspaceClient に固定する。
-     取れなければ例外にする（ほかの資格情報に切り替えない）。それ以外の場所では WorkspaceClient() をそのまま使う。
+## 作るもの
+| ファイル | 形 | 中身 |
+|---|---|---|
+| handson/my_work/memory.py | Python ファイル | Managed Agent Memory の読み書き（scope の記憶を全部読む・1 件書き込む） |
+| handson/my_work/agent.py | Python ファイル | LangGraph のグラフと、MLflow の ResponsesAgent（Model Serving の入出力） |
+| handson/my_work/02_try_agent.py | ノートブック | agent.py を読み込んで 1 社を採点し、トレースを見る |
 
-2. agent.py（LangGraph のグラフと MLflow の ResponsesAgent。Python ファイル）
-   - 設定は環境変数 HANDSON_CATALOG・HANDSON_SCHEMA・HANDSON_CASE_INDEX・HANDSON_LLM_ENDPOINT
-     （既定 databricks-claude-sonnet-5）から読む。HANDSON_CASE_INDEX は、代表者が作った共有の AI Search のインデックス。
-   - LLM は databricks_langchain の ChatDatabricks、AI Search は databricks_langchain の VectorSearchRetrieverTool
-     （columns は case_id・title・content、num_results 3）。
-   - LLM は今日の日付を知らないので、各観点の入力に「今日の日付」（日本時間）を入れる。
-   - LLM の出力からは ```json フェンスの JSON を取り出す。推論ブロック付きの応答（content がリスト）にも対応する。
-   - ResponsesAgent の predict: 会社IDは custom_inputs.company_id（なければ企業特性の company_id）。
-     どちらもない（企業特性の JSON がない。Review App で普通に質問された場合など）ときは、エラーにせず、
-     このエージェントが何をするかの説明と、入力の例（企業特性の JSON）を本文で返し、custom_outputs.score_result は null にする。
-     出力は本文（コメント＋```json フェンスの score_result）と custom_outputs.score_result。
-     predict_stream は predict の結果を 1 回で返すだけでよい。
-   - 先頭で mlflow.langchain.autolog() を呼び、最後に mlflow.models.set_model(AGENT) で登録する（model-from-code）。
+## 決まりごと
+- memory.py と agent.py は普通の Python ファイルにする（先頭に "# Databricks notebook source" を付けない）
+- 設定は環境変数（HANDSON_CATALOG・HANDSON_SCHEMA・HANDSON_CASE_INDEX・HANDSON_LLM_ENDPOINT）から読む。
+  02_try_agent では、これらに _config.py の値を入れてから agent.py を読み込む
+- LLM は ChatDatabricks、AI Search は VectorSearchRetrieverTool（どちらも databricks_langchain）を使う
+- 入出力は handson/README.md の「スコアリングエージェントの仕様」のとおりにする
+- 企業特性の JSON がない入力（Review App で普通に質問された場合など）には、エラーにせず、
+  エージェントの説明と入力の例を返す
+- ライブラリは handson/requirements.txt のバージョンに合わせる
 
-3. 02_try_agent.py（動作確認のノートブック）
-   - handson/02_agent/solution/02_try_agent.py と同じ流れで、エージェントのフォルダを ../my_work にする。
-   - 環境変数 HANDSON_CATALOG・HANDSON_SCHEMA・HANDSON_CASE_INDEX・HANDSON_LLM_ENDPOINT を _config.py の値
-     （CATALOG・SCHEMA・CASE_INDEX・LLM_ENDPOINT）で設定してから、agent.py を import する。
-   - エクスペリメントは _config.py の EXPERIMENT_PATH に、トレースの保存先を Unity Catalog（自分のスキーマ、
-     table_prefix "scoring"）にして作る。
+## 気をつけること
+- Model Serving の中では、Memory を「呼び出したユーザー本人の資格情報（OBO）」で読む。トークンはリクエストごとに取り、
+  取れなければエラーにする（ほかの資格情報に切り替えない）
+- LLM は今日の日付を知らないので、各観点の入力に「今日の日付」（日本時間）を入れる
+- 02_try_agent のエクスペリメントは、トレースの保存先を Unity Catalog（自分のスキーマ）にして作る
 
-ライブラリは handson/requirements.txt のバージョンに合わせてください。
-できたら、ワークスペースの handson/my_work/ に反映してください。
+## 参考にするもの
+- 仕様: handson/README.md の「スコアリングエージェントの仕様」、handson/02_agent/README.md の「エージェントの構成」
+- Memory の API と OBO の書き方: handson/02_agent/solution/memory.py
+- 動作確認のノートブックの流れ: handson/02_agent/solution/02_try_agent.py
+
+## できたら
+ワークスペースに反映して、02_try_agent を実行してよいか聞いてください。
+完了の条件: 1 社の採点結果（score_result）が返ってきて、トレースに AI Search の検索と 6 つの採点が残っていること。
 ```
 
 ## 動かしてみて、うまくいかないとき
 
-Omnigent に、エラーの全文と一緒に次のように頼みます。
+Omnigent が実行したときは、エラーを見て自分で直してくれます。自分で実行したときは、エラーの全文と一緒に次のように頼みます。
 
 ```
 my_work/02_try_agent を実行したら、次のエラーになりました。原因を調べて直してください。

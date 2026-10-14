@@ -74,11 +74,16 @@
 2. ZIP を添付したまま、次のメッセージを送る（そのまま送れます。書き換える箇所はありません）。これがセッションの最初のメッセージです
 
 ```
-添付した ZIP（ハンズオンの教材）を、作業場所に展開してください。まだワークスペースには取り込みません。
-1. ZIP を /home/sandbox-agent/workspace に展開し、
-   /home/sandbox-agent/workspace/agent-handson-main/handson/ フォルダがあることを確かめる。
-2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる。
-   participant.materials_folder は agent-handson-main のままにする。
+## やりたいこと
+添付した ZIP（ハンズオンの教材）を、作業場所に展開してください。ワークスペースへの取り込みは、まだしません。
+
+## やること
+1. ZIP を /home/sandbox-agent/workspace に展開する
+2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる
+   （participant.materials_folder は agent-handson-main のまま）
+
+## できたら
+/home/sandbox-agent/workspace/agent-handson-main/handson/ ができたことと、入れたメールアドレスを教えてください。
 ```
 
 > **ZIP を添付できないとき**: 講師が共有の Volume に同じ ZIP を置いている場合は、1 の代わりに次を頼みます。
@@ -90,12 +95,17 @@
 講師から、教材のリポジトリの URL を案内されたときの方法です。次のメッセージの `<...>` を、講師の案内に置き換えて送ります。
 
 ```
-次の Git リポジトリを、/home/sandbox-agent/workspace の下にクローンしてください。
+## やりたいこと
+次の Git リポジトリを、作業場所にクローンしてください。ワークスペースへの取り込みは、まだしません。
 <講師から案内されたリポジトリの URL>
-クローンしたら、次をしてください（まだワークスペースには取り込みません）。
-1. /home/sandbox-agent/workspace/agent-handson/handson/ フォルダがあることを確かめる。
-2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる。
-   participant.materials_folder は agent-handson にする。
+
+## やること
+1. /home/sandbox-agent/workspace の下にクローンする
+2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる
+   （participant.materials_folder は agent-handson にする）
+
+## できたら
+/home/sandbox-agent/workspace/agent-handson/handson/ ができたことと、入れたメールアドレスを教えてください。
 ```
 
 > Omnigent からリポジトリにアクセスするには、Sandbox から GitHub に接続できる必要があります。クローンできないときは、ZIP の方法に切り替えます。
@@ -108,18 +118,24 @@ Omnigent の作業場所にある `handson/settings.json` の `instructor` に�
 （`settings.json` を自分で直接編集してカタログを入れた場合は、1 を「入っているカタログを確かめる」に読み替えて送ります）。
 
 ```
-handson/settings.json の instructor に、このハンズオンで使う値を入れてください。
-1. catalog に <講師から案内されたカタログ> を入れる。databricks catalogs get でそのカタログがあり、私が使えることを確かめる。
-2. warehouse_id に、私が使える SQL ウェアハウスの ID を入れる。databricks warehouses list で調べ、
-   1 つしかなければそれを、複数あれば名前・種類（サーバーレスか）・状態の一覧を見せて、私に選ばせる。
-3. workspace_url に、いまの Databricks CLI の接続先のワークスペースの URL を入れる。
-4. ほかの項目（shared_schema・ai_search_endpoint・基盤モデル）は既定のままにする。llm_endpoint・extract_llm_endpoint・
-   embedding_endpoint の基盤モデルが、databricks serving-endpoints get でワークスペースにあることを確かめる。
-5. 教材のフォルダをまるごと、Databricks CLI で私のワークスペースに取り込む。
-   取り込み先は /Workspace/Users/<user_email>/<materials_folder>（どちらも settings.json の participant の値）。
-   取り込み先に handson/settings.json と handson/00_setup/00_check_config ができたことを確かめる。
-6. handson/_config.py の決め方で、私のスキーマ名・共有のインデックス名・Memory の名前・エンドポイント名・エクスペリメントの
-   パスを求めて、表にして見せる。
+## やりたいこと
+handson/settings.json の instructor に、このハンズオンで使う値を入れてから、教材をワークスペースに取り込んでください。
+
+## 入れる値
+| 項目 | 入れる値 |
+|---|---|
+| catalog | <講師から案内されたカタログ>（そのカタログがあり、私が使えることも確かめる） |
+| warehouse_id | 私が使える SQL ウェアハウスの ID（1 つしかなければそれ、複数あれば一覧を見せて私に選ばせる） |
+| workspace_url | いまの Databricks CLI の接続先のワークスペースの URL |
+| そのほか | 既定のまま（基盤モデルの 3 つが、ワークスペースにあることだけ確かめる） |
+
+## そのあとにやること
+教材のフォルダをまるごと、私のワークスペースの /Workspace/Users/<user_email>/<materials_folder> に取り込む
+（user_email と materials_folder は settings.json の participant の値）。
+
+## できたら
+handson/_config.py の決め方で、私のスキーマ名・共有のインデックス名・Memory の名前・エンドポイント名・エクスペリメントの
+パスを求めて、表にして見せてください。
 ```
 
 次のような表が返ってくれば完了です。
@@ -149,12 +165,16 @@ Claude Code が AI Search・Model Serving・MLflow の評価・ジョブなど�
 ### A. Omnigent にプロンプトで頼む（おすすめ）
 
 ```
+## やりたいこと
 Databricks のエージェントスキルを、この環境の Claude Code に入れてください。
-1. databricks --version で CLI のバージョンを確かめる。aitools コマンドがない（databricks aitools --help が失敗する）
-   ほど古ければ、Databricks CLI を最新に更新する。
-2. databricks aitools install --agents claude-code --scope global を実行する。
-3. databricks aitools list で、入ったスキルの一覧を表示する。
-4. 入ったスキルの名前と、それぞれ何に使えるかを 1 行ずつ表にまとめる。
+
+## やること
+1. databricks aitools install --agents claude-code --scope global を実行する
+   （aitools コマンドがないほど Databricks CLI が古ければ、先に CLI を最新に更新する）
+2. databricks aitools list で、入ったスキルを確かめる
+
+## できたら
+入ったスキルの名前と、それぞれ何に使えるかを、1 行ずつ表にして見せてください。
 ```
 
 ### B. シェルでコマンドを打つ
@@ -185,31 +205,30 @@ Omnigent に次を送ります（そのまま送れます）。
 Omnigent とやり取りし続けるので、Sandbox が止まりにくくなり、失敗したときも Omnigent がエラーを見て直せます。
 
 ```
-これから Databricks のハンズオンを行います。教材は /home/sandbox-agent/workspace の下の、
-handson/settings.json の participant.materials_folder のフォルダの handson/ にあります。
-handson/README.md と各 Step の README.md を読み、全体の流れを把握してください。
+## やりたいこと
+これから Databricks のハンズオンを行います。教材を読んで、全体の流れをつかんでください。
+教材は /home/sandbox-agent/workspace の下の、handson/settings.json の participant.materials_folder のフォルダの handson/ にあります。
+handson/README.md と、各 Step の README.md を読んでください。
 
-作業のルール:
-- 環境や私によって変わる値（ワークスペース・カタログ・スキーマ・メールアドレス・エンドポイント名など）は、
-  プロンプトに書いていなくても、必ず handson/settings.json と handson/_config.py の決め方から求めてください。
-- 私が作ってほしいコードは handson/my_work/ に置いてください。
-- ファイルの形は次のとおりにしてください。
-  - エージェント本体（LangGraph のグラフ・採点基準・Memory の読み書き）は、普通の Python ファイル（.py）にする。
-    先頭に "# Databricks notebook source" を付けない（ノートブックにしない。ほかのファイルから import するため）。
-  - エージェントを読み込んで動かす・評価する・デプロイするコードと、データの準備・ジョブのタスクは、
-    Databricks のノートブックにする（ソース形式。先頭が "# Databricks notebook source"、セルの区切りは
-    "# COMMAND ----------"、説明は日本語の Markdown セル）。
-- handson/ の下のファイル（my_work/ のコード、settings.json、採点基準など）を作ったり変えたりしたら、毎回、
-  Databricks CLI で私のワークスペースの同じ場所にも上書きで反映してください（作業場所とワークスペースの中身を同じにしておく）。
-  反映先は /Workspace/Users/<user_email>/<materials_folder>/handson/ の下の同じパス（settings.json の participant の値）。
-  例: databricks workspace import-dir handson/my_work /Workspace/Users/<user_email>/<materials_folder>/handson/my_work --overwrite
-  （先頭が "# Databricks notebook source" の .py はノートブックとして、それ以外の .py はファイルとして取り込まれます）
-- ノートブックを作ったり直したりしたら、ワークスペースに反映したうえで、「このまま実行しますか？」と私に聞いてください。
-  「はい」と答えたら、handson/tools/run_notebook.sh でワークスペースのノートブックを実行し、終わるまで待ってください
-  （例: bash handson/tools/run_notebook.sh /Workspace/Users/<user_email>/<materials_folder>/handson/my_work/01_prepare_data）。
-  終わったら、結果の要点と実行の画面の URL を教えてください。失敗したら、原因を調べて直し、もう一度聞いてください。
-読み込みが終わったら、全体の流れを 5 行で要約してください。
-あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
+## 作業のルール（ハンズオンの最後まで守ってください）
+1. 設定値: 環境や私によって変わる値（ワークスペース・カタログ・スキーマ・メールアドレス・エンドポイント名など）は、
+   プロンプトに書いていなくても、handson/settings.json と handson/_config.py の決め方から求める
+2. 置き場所: 私が作ってほしいコードは handson/my_work/ に置く
+3. ファイルの形:
+   - エージェント本体（LangGraph のグラフ・採点基準・Memory の読み書き）は、普通の Python ファイル（.py）にする
+     （先頭に "# Databricks notebook source" を付けない。ほかのファイルから import するため）
+   - それ以外（エージェントを動かす・評価する・デプロイするコード、データの準備、ジョブのタスク）は、
+     Databricks のノートブック（ソース形式）にする。セルの説明は日本語の Markdown セルで書く
+4. ワークスペースへの反映: handson/ の下のファイルを作ったり変えたりしたら、毎回、Databricks CLI で
+   /Workspace/Users/<user_email>/<materials_folder>/handson/ の下の同じ場所に上書きで反映する
+   （例: databricks workspace import-dir handson/my_work <反映先>/my_work --overwrite）
+5. ノートブックの実行: ノートブックを作ったり直したりしたら、「このまま実行しますか？」と私に聞く。
+   「はい」なら handson/tools/run_notebook.sh でワークスペースのノートブックを実行し、終わるまで待つ
+   （例: bash handson/tools/run_notebook.sh /Workspace/Users/<user_email>/<materials_folder>/handson/my_work/01_prepare_data）。
+   終わったら、結果の要点と実行の画面の URL を教える。失敗したら、原因を調べて直し、もう一度聞く
+
+## できたら
+全体の流れを 5 行で要約してください。あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
 ```
 
 ### Sandbox は、操作がないまま 10 分たつと止まる

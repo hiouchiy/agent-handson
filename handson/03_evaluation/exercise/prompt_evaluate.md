@@ -2,38 +2,57 @@
 
 ## 評価のノートブックを作る
 
+**このプロンプトで頼んでいること**: 評価データを登録し、4 つのスコアラーでエージェントを評価するノートブックを作ってもらう。
+
 ```
-handson/03_evaluation/README.md の「評価データ」と「スコアラー」のとおりに、MLflow でオフライン評価する
-Databricks ノートブックを handson/my_work/03_evaluate.py として作ってください。
+## やりたいこと
+MLflow で、エージェントのオフライン評価をするノートブックを作ってください。
 
-条件:
-- 先頭で handson/requirements.txt のライブラリを %pip で入れ、%run ../_config を実行する。
-- ノートブック（ソース形式）にする。エージェント本体（agent.py などの Python ファイル）は変えずに import して使う。
-- エージェントは handson/my_work/ の agent.py を読み込んで、ノートブックの中で直接呼ぶ（デプロイはまだしない）。
-  環境変数 HANDSON_CATALOG・HANDSON_SCHEMA・HANDSON_CASE_INDEX・HANDSON_LLM_ENDPOINT を _config.py の値で設定してから読み込む。
-- エクスペリメントは _config.py の EXPERIMENT_PATH（Step 2 で作ったもの）を使う。
-  トレースを読むため、環境変数 MLFLOW_TRACING_SQL_WAREHOUSE_ID に _config.py の WAREHOUSE_ID を入れる。
-- handson/03_evaluation/eval_dataset.json を、mlflow.genai.datasets で Unity Catalog の評価データセット
-  （_config.py の FQ の中の scoring_eval_dataset）として登録する。inputs は company_id と characteristics_json、
-  expectations は JSON の expectations をそのまま使う。前の内容が混ざらないよう、すでにあれば消してから作り直す。
-- スコアラーは README の表の 4 つ。コードのスコアラーは mlflow.genai.scorers の @scorer で書き、
-  理由（rationale）には、実際の値と期待値を書く。
+## 作るもの
+- ファイル: handson/my_work/03_evaluate.py（ノートブック）
+- 中身:
+  1. handson/03_evaluation/eval_dataset.json を、Unity Catalog の評価データセット scoring_eval_dataset として登録する
+  2. README の「スコアラー」の 4 つのスコアラーを用意する
+  3. my_work の agent.py を直接呼んで評価する（デプロイはまだしない）
+  4. スコアラーごとの結果を表示する
+
+## 決まりごと
+- エージェント本体（agent.py などの Python ファイル）は変えずに import して使う
+- 名前（スキーマ・エクスペリメントなど）は %run ../_config で読み込んだ変数を使う。エクスペリメントは Step 2 のものを使う
+- 評価データセットは、前の内容が混ざらないよう、すでにあれば消してから作り直す
+- スコアラーの理由（rationale）には、実際の値と期待値を書く
+
+## 気をつけること
 - meets_expected_points は MLflow 組み込みの ExpectationsGuidelines を使い、期待値の expected_points を guidelines として渡す。
-  ジャッジには、出力を {"score_result": ...} の JSON の文字列にして渡す（dict のままだと中の項目を読めないことがある）。
-- predict_fn は、評価データの inputs を受け取り、エージェントの predict を呼んで
-  {"response": 本文, "score_result": custom_outputs.score_result} を返す。
-- mlflow.genai.evaluate で評価し、スコアラーごとの平均を表示する。
+  ジャッジには、出力を {"score_result": ...} の JSON の文字列にして渡す（dict のままだと中の項目を読めないことがある）
+- トレースを読むため、環境変数 MLFLOW_TRACING_SQL_WAREHOUSE_ID に _config.py の WAREHOUSE_ID を入れる
 
-できたら、ワークスペースの handson/my_work/ に反映してください。
+## 参考にするもの
+- 評価データとスコアラー: handson/03_evaluation/README.md の「評価データ」「スコアラー」
+- MLflow の評価の書き方: Databricks のスキル（databricks-mlflow-evaluation）
+
+## できたら
+ワークスペースに反映して、実行してよいか聞いてください。
+完了の条件: 評価が最後まで動き、評価データごとに、どのスコアラーが OK／NG かが表示されること（最初は NG が出ます）。
 ```
 
 ## 直すとき（例）
 
-原因がわかったら、直したい内容を具体的に伝えます。
+**このプロンプトで頼んでいること**: NG の原因が分かったあとで、直したい内容を伝えて直してもらい、もう一度評価してもらう。
 
 ```
-評価で E00X が NG になりました。理由は「<Genie Code で調べてわかったこと>」です。
-<直したい内容。例: 採点基準の〇〇を△△に変える>ように、handson/my_work/ のファイルを直してください。
-採点基準を変えた場合は RUBRIC_VERSION を 1 つ上げてください。
-直したらワークスペースに反映し、どのファイルのどこを変えたかを教えてください。
+## やりたいこと
+評価で E00X が NG になったので、直してもう一度評価してください。
+
+## NG の理由
+<Genie Code で調べてわかったこと>
+
+## 直したいこと
+<例: 採点基準の〇〇を△△に変える>
+
+## 決まりごと
+- 採点基準（rubric.py）を変えた場合は RUBRIC_VERSION を 1 つ上げる
+
+## できたら
+どのファイルのどこを変えたかを教えてから、ワークスペースに反映して、評価をもう一度実行してよいか聞いてください。
 ```

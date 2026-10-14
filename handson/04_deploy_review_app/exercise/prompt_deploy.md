@@ -1,33 +1,40 @@
 # Omnigent に送るプロンプト（Step 4 デプロイ）
 
+**このプロンプトで頼んでいること**: Step 3 で直したエージェントを、Model Serving にデプロイするノートブックを作ってもらう。
+
 ```
-handson/my_work/ のエージェント（agent.py・rubric.py・memory.py）を Model Serving にデプロイする
-Databricks ノートブックを handson/my_work/04_deploy.py として作ってください。
+## やりたいこと
+my_work のエージェントを、Model Serving にデプロイするノートブックを作ってください。
 
-条件:
-- ノートブック（ソース形式）にする。エージェント本体（agent.py・rubric.py・memory.py の Python ファイル）は変えない。
-- 先頭で handson/requirements.txt のライブラリを %pip で入れ、%run ../_config を実行する。
-- エクスペリメントは _config.py の EXPERIMENT_PATH を使う（デプロイ後のトレースも同じ場所に入れるため）。
-- mlflow.pyfunc.log_model で model-from-code として記録する。python_model は agent.py、
-  code_paths に rubric.py と memory.py を入れる。記録するときに agent.py が import できるよう、
-  my_work を sys.path に入れておく。
-- 依存は handson/requirements.txt と同じバージョンに固定する（databricks-agents は除く）。
-- input_example には、企業特性の JSON と custom_inputs.company_id を入れる。
-- auth_policy:
-  - SystemAuthPolicy の resources に、LLM（_config.py の LLM_ENDPOINT）・埋め込みモデル（EMBEDDING_ENDPOINT）・
-    AI Search のインデックス（CASE_INDEX）を宣言する。
-  - UserAuthPolicy(api_scopes=["unity-catalog"]) を付ける（Managed Agent Memory を呼び出したユーザーとして読むため）。
-- デプロイ後のトレースを Unity Catalog のテーブル（scoring_otel_*）に書けるよう、自分の個人用アクセストークン
-  （有効期限 3 日）を databricks-sdk で作り、Secret スコープ agent_handson_<PARTICIPANT> のキー tracing_token に入れる
-  （スコープがなければ作る）。エンドポイント自身の ID には、トレースのテーブルへの権限がないため。
-- Unity Catalog の MODEL_NAME に登録し、databricks.agents.deploy で ENDPOINT_NAME にデプロイする。
-  environment_vars に HANDSON_CATALOG・HANDSON_SCHEMA・HANDSON_CASE_INDEX・HANDSON_LLM_ENDPOINT と、
-  DATABRICKS_TOKEN（値は "{{secrets/<スコープ>/tracing_token}}"）、DATABRICKS_AUTH_TYPE（"pat"）、
-  DATABRICKS_HOST（ワークスペースの URL）を渡す。AUTH_TYPE を pat にしないと、Serving の中ではエンドポイント自身の
-  資格情報が優先されてトレースが書けない。scale_to_zero は true。
-- デプロイ後に、エンドポイント名と Review App の URL を表示する。
-- エンドポイントの準備ができたら、今回のバージョン以外（agents.deploy が流量 0% で残す古いバージョン）をエンドポイントから外す。
-- 最後のセルで、評価データの 1 件目をエンドポイントに送り、score・tier・next_action を表示する。
+## 作るもの
+- ファイル: handson/my_work/04_deploy.py（ノートブック）
+- 中身:
+  1. エージェントを MLflow に記録する（model-from-code。agent.py が本体、rubric.py と memory.py も一緒に入れる）
+  2. Unity Catalog に登録する
+  3. databricks.agents.deploy で Model Serving にデプロイし、エンドポイント名と Review App の URL を表示する
+  4. エンドポイントの準備ができるまで待つ
+  5. 評価データの 1 件目をエンドポイントに送り、score・tier・next_action を表示する
 
-できたら、ワークスペースの handson/my_work/ に反映してください。
+## 決まりごと
+- エージェント本体（agent.py・rubric.py・memory.py）は変えない
+- 名前（モデル・エンドポイント・エクスペリメントなど）は %run ../_config で読み込んだ変数を使う。
+  エクスペリメントは Step 2 のもの（デプロイ後のトレースも同じ場所に入れる）
+- 依存は handson/requirements.txt と同じバージョンに固定する（databricks-agents は除く）
+- 使うリソース（LLM・埋め込みモデル・AI Search のインデックス）は、システムの認証で宣言する。
+  Memory は呼び出したユーザーとして読むので、ユーザーの認証（スコープ unity-catalog）も付ける
+
+## 気をつけること
+- デプロイ後のトレースを Unity Catalog のテーブルに書くには、自分の個人用アクセストークン（有効期限 3 日）を Secret に入れ、
+  デプロイの環境変数で DATABRICKS_TOKEN（Secret の参照）・DATABRICKS_AUTH_TYPE=pat・DATABRICKS_HOST を渡す
+  （エンドポイント自身の ID にはトレースのテーブルの権限がない。AUTH_TYPE を pat にしないとトークンが使われない）
+- 記録するときに agent.py を読み込むので、my_work を sys.path に入れておく
+- agents.deploy は古いバージョンを流量 0% で残すので、準備ができたら今回のバージョン以外を外す
+
+## 参考にするもの
+- 同じことをするノートブック: handson/04_deploy_review_app/solution/04_deploy.py
+- デプロイの書き方: Databricks のスキル（databricks-model-serving）
+
+## できたら
+ワークスペースに反映して、実行してよいか聞いてください（デプロイの完了まで 20〜25 分かかります）。
+完了の条件: エンドポイントから採点結果が返ってきて、Review App の URL が表示されること。
 ```
