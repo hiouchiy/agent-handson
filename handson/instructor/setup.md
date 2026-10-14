@@ -12,7 +12,7 @@
 | MLflow のトレースを Unity Catalog に保存する機能 | 2〜5 | Step 2 の模範解答で `scoring_otel_spans` テーブルができること |
 | Model Serving のユーザー代理（On-Behalf-Of）認証 | 4〜5 | Step 4 の模範解答のデプロイが成功すること |
 | Genie Code（Databricks Assistant のエージェントモード） | 3 | ノートブックで Assistant のエージェントモードを使えること |
-| Omnigent の中から GitHub と PyPI・Databricks のスキル配布元（GitHub）に出られること | 0 | Step 0 の手順 4 で `databricks aitools install` が成功すること |
+| Omnigent の中から GitHub と PyPI・Databricks のスキル配布元（GitHub）に出られること | 0 | Step 0 の手順 3 で `databricks aitools install` が成功すること |
 
 > **リージョンに注意**: Omnigent の実行場所（Sandbox）は、対応しているリージョンが限られています。
 > ハンズオンのワークスペースのリージョンが対応しているか、事前に確認してください。
@@ -93,8 +93,10 @@
 7. `05_job_dashboard/solution/05_create_job` → ダッシュボードを作成
 
 ## 5. 当日の注意
-- Omnigent の権限のモードは **Accept edits（編集を承認）** にしてもらいます（auto にしない）。auto では、リソースを作るコマンドが理由なく拒否され、広い許可ルールも効きません。Step 0 の手順 1-2 で、ハンズオンで使うコマンドの許可ルール（`00_setup/claude_settings.json`）を入れてもらいます。
-  - 事前に講師のユーザーで、1-2 のあとに `/permissions` で許可ルールが反映されること（組織の管理設定で、ユーザーの許可ルールが無視される設定になっていないこと）を確かめておきます。
+- Omnigent の権限のモードは **Accept edits（編集を承認）** にしてもらいます（auto にしない）。auto では、リソースを作るコマンドが理由なく拒否され、広い許可ルールも効きません。
+  Step 0 の手順 2 で最初に出る確認ダイアログでは、**Approve & don't ask again for Bash** を選んでもらいます（以降の Bash が確認なしになる）。
+  それでも確認が出続けるときの予備として、ハンズオンで使うコマンドの許可ルール（`00_setup/claude_settings.json`）を用意してあります。
+  - 予備を使う場合は、事前に講師のユーザーで、`/permissions` に許可ルールが反映されること（組織の管理設定で、ユーザーの許可ルールが無視される設定になっていないこと）を確かめておきます。
 - Omnigent は、ハンズオンの最後まで 1 つのセッションで作業してもらいます。新しいセッションを開くと別の Sandbox になり、入れたエージェントスキル・教材・作ったコードが引き継がれません。最初に参加者に伝えておきます。
 - デプロイ（Step 4）は 15〜20 分かかります。待ち時間に Review App とトレースの説明を入れます。
 - 評価データの NG は、わざと仕込んでいます。種明かしは [eval_answers.md](eval_answers.md) を参照してください（参加者には配りません）。

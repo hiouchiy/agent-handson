@@ -4,24 +4,24 @@
 
 | # | やること | 誰が |
 |---|---|---|
-| 1 | Omnigent を起動し、ハンズオンで使うコマンドの許可と、Databricks のエージェントスキルを設定する | 全員 |
-| 2 | 同じセッションのまま、教材を受け取る（Omnigent の作業場所と、Databricks のワークスペースの両方に置く） | 全員 |
-| 3 | 設定（自分のスキーマ名など）を確認する | 全員 |
-| 4 | 全員で使う AI Search（エンドポイントとインデックス）を作る | **代表者 1 名だけ** |
+| 1 | Omnigent を起動し、権限のモードを「編集を承認」にする | 全員 |
+| 2 | 教材を受け取る（Omnigent の作業場所と、Databricks のワークスペースの両方に置く）。最初の確認で、以降の Bash を確認なしにする | 全員 |
+| 3 | Databricks のエージェントスキルを入れて、リロードする | 全員 |
+| 4 | 作業のルールを Omnigent に伝える | 全員 |
+| 5 | 設定（自分のスキーマ名など）を確認する | 全員 |
+| 6 | 全員で使う AI Search（エンドポイントとインデックス）を作る | **代表者 1 名だけ** |
 
-代表者が 4 をやっている間に、ほかの参加者は 3 までを済ませます。
+教材を最初に受け取るので、手順 3 以降は、ワークスペースに取り込んだこの README を開いて、プロンプトをコピーしながら進められます。
+代表者が 6 をやっている間に、ほかの参加者は 5 までを済ませます。
 
-## 1. Omnigent を起動し、権限とエージェントスキルを設定する
-
-### 1-1. 起動して、権限のモードを「編集を承認」にする
+## 1. Omnigent を起動し、権限のモードを「編集を承認」にする
 1. ブラウザで、講師から案内されたワークスペースの URL の後ろに `/omnigent` を付けたページを開く
 2. **New session** → 実行場所に **Sandbox** を選ぶ
 3. 権限のモードを **Accept edits（編集を承認）** にする。チャットの設定、または入力欄で `Shift+Tab` を押して切り替えます。
    **auto にはしません。**
 
 > **なぜ auto にしないのか**: auto では、Omnigent がスキーマ・テーブル・AI Search などを作るコマンドが、理由を示されずに拒否されます。
-> さらに auto では、`databricks *` や `python3 *` のような広い許可ルールが効かなくなるため、許可ルールを足しても解決しません。
-> 「編集を承認」のモードなら、次の 1-2 で入れる許可ルールがそのまま効き、ハンズオンで使うコマンドは確認なしで実行されます。
+> さらに auto では、`databricks *` や `python3 *` のような広い許可ルールも効かなくなるため、許可ルールを足しても解決しません。
 
 > **ハンズオンの最後まで、このセッション 1 つで作業します。** 新しいセッションを開くと、別の Sandbox（作業場所）が割り当てられ、
 > このセッションで入れた設定・スキルや、置いた教材・作ったコードは引き継がれません。
@@ -29,115 +29,25 @@
 
 > Omnigent の中の Databricks CLI は、あなたのユーザーの権限で動きます。あなたができないこと（管理者の権限が必要な操作）は、Omnigent にもできません。
 
-### 1-2. ハンズオンで使うコマンドを許可する（確認はこの 1 回だけ）
-セッションの最初のメッセージで、次を送ります（返事が返ってくれば、Omnigent が動いていることの確認にもなります）。
-Omnigent が設定ファイルに書き込む許可を求めてくるので、**許可** します。以降は、ハンズオンで使うコマンドで確認が出なくなります。
-
-````
-ハンズオンで使うコマンドを、確認なしで実行できるようにしたいです。
-~/.claude/settings.json に、次の permissions を入れてください（ファイルがなければ作り、あれば permissions の allow に足して、
-defaultMode を acceptEdits にする。ほかの設定は消さない）。入れたら、/permissions で反映されたことを確かめてください。
-
-```json
-{
-  "permissions": {
-    "defaultMode": "acceptEdits",
-    "allow": [
-      "Bash(databricks *)",
-      "Bash(python3 *)",
-      "Bash(python *)",
-      "Bash(pip *)",
-      "Bash(pip3 *)",
-      "Bash(uv *)",
-      "Bash(unzip *)",
-      "Bash(zip *)",
-      "Bash(git *)",
-      "Bash(curl *)",
-      "Bash(sh *)",
-      "Bash(bash *)",
-      "Bash(cd *)",
-      "Bash(pwd)",
-      "Bash(ls *)",
-      "Bash(cat *)",
-      "Bash(head *)",
-      "Bash(tail *)",
-      "Bash(wc *)",
-      "Bash(grep *)",
-      "Bash(find *)",
-      "Bash(sort *)",
-      "Bash(diff *)",
-      "Bash(echo *)",
-      "Bash(printf *)",
-      "Bash(sed *)",
-      "Bash(awk *)",
-      "Bash(jq *)",
-      "Bash(tee *)",
-      "Bash(mkdir *)",
-      "Bash(cp *)",
-      "Bash(mv *)",
-      "Bash(rm *)",
-      "Bash(touch *)",
-      "Bash(chmod *)",
-      "Bash(export *)",
-      "Bash(source *)",
-      "Bash(which *)",
-      "Bash(env *)",
-      "Bash(date *)",
-      "Bash(sleep *)",
-      "Bash(timeout *)",
-      "WebFetch(domain:docs.databricks.com)"
-    ]
-  }
-}
-```
-````
-
-> 同じ内容は、教材の `handson/00_setup/claude_settings.json` にもあります。
-> 許可ルールに当てはまらないコマンドが出てきたときだけ、確認のダイアログが出ます。内容を見て許可してください。
-
-### 1-3. Databricks のエージェントスキルを入れる
-Omnigent の中では Claude Code が動いています。Databricks の **エージェントスキル**（[Agent skills for AI coding assistants](https://docs.databricks.com/aws/en/agent-skills/)）を入れておくと、
-Claude Code が AI Search・Model Serving・MLflow の評価・ジョブなどの正しい作り方を参照しながらコードを書くので、ぐっと作業が楽になります。
-次の **A（プロンプト）** を送ります。プロンプトを打つのが手間な方は、**B（シェル）** でも入れられます。
-
-#### A. Omnigent にプロンプトで頼む（おすすめ）
-
-```
-Databricks のエージェントスキルを、この環境の Claude Code に入れてください。
-1. databricks --version で CLI のバージョンを確かめる。aitools コマンドがない（databricks aitools --help が失敗する）
-   ほど古ければ、Databricks CLI を最新に更新する。
-2. databricks aitools install --agents claude-code --scope global を実行する。
-3. databricks aitools list で、入ったスキルの一覧を表示する。
-4. 入ったスキルの名前と、それぞれ何に使えるかを 1 行ずつ表にまとめる。
-```
-
-#### B. シェルでコマンドを打つ
-Omnigent の画面を **シェル** に切り替えて、次を実行します。
-
-```bash
-databricks --version                     # aitools コマンドがない古い CLI なら、下の 1 行で更新する
-# curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sudo sh
-
-databricks aitools install --agents claude-code --scope global
-databricks aitools list                  # 入ったスキルを確かめる
-```
-
-### 1-4. リロードして反映させる
-入れたスキルは、そのままでは読み込まれません。次の順で反映させます。
-1. Omnigent の画面を、チャットから **シェル** の画面に切り替える
-2. 次のコマンドを打つ（スキルを含めて読み込み直される）
-
-   ```
-   /reload-plugins
-   ```
-
-3. チャットの画面に戻り、**同じセッションのまま** 手順 2 に進む
-
 ## 2. 教材を受け取る
-手順 1 と **同じセッション** で続けます（新しいセッションは開きません）。
-
 教材は、**Omnigent の作業場所**（`/home/sandbox-agent/workspace`。コードを書く場所）と、
-**Databricks のワークスペース**（ノートブックを開いて実行する場所）の両方に置きます。
+**Databricks のワークスペース**（ノートブックを開いて実行する場所。この README もここで開ける）の両方に置きます。
+
+### 最初の確認ダイアログでは「Approve & don't ask again for Bash」を選ぶ
+教材を展開するときに、Omnigent が Bash のコマンドを実行する許可を求めてきます（**Approval required** のダイアログ）。
+
+| ボタン | 意味 | 選ぶか |
+|---|---|---|
+| Approve | このコマンドを今回だけ許可する | 次のコマンドでまた聞かれる |
+| **Approve & don't ask again for Bash** | 許可し、以降は Bash のコマンドをすべて確認なしで実行する | **これを選ぶ** |
+| Approve & switch to auto mode | 許可して auto に切り替える | 選ばない（auto ではリソースを作るコマンドが拒否される） |
+| Reject | 許可しない | 選ばない |
+
+「Approve & don't ask again for Bash」を選ぶと、以降のハンズオンのコマンドは確認なしで進みます（モードが「編集を承認」なので、ファイルの編集も確認なしで通ります）。
+
+> **それでも確認が出続けるとき**: ハンズオンで使うコマンドの許可ルールを、教材の `handson/00_setup/claude_settings.json` に用意してあります。
+> Omnigent に「~/.claude/settings.json に、handson/00_setup/claude_settings.json の permissions を入れてください
+> （あれば allow に足して、defaultMode を acceptEdits にする。ほかの設定は消さない）。入れたら /permissions で反映されたことを確かめてください」と頼みます。
 
 ### 設定ファイル `handson/settings.json`
 環境や参加者によって変わる値は、すべて `handson/settings.json` に入っています。ノートブックもプロンプトも、この値を読みます。
@@ -160,7 +70,7 @@ databricks aitools list                  # 入ったスキルを確かめる
 
 ### 基本: ZIP から
 1. Omnigent のチャットの入力欄で、ファイルを添付するボタンから、講師から受け取った ZIP（`agent-handson-main.zip`）を選ぶ
-2. ZIP を添付したまま、次のメッセージを送る（そのまま送れます。書き換える箇所はありません）
+2. ZIP を添付したまま、次のメッセージを送る（そのまま送れます。書き換える箇所はありません）。これがセッションの最初のメッセージです
 
 ```
 添付した ZIP（ハンズオンの教材）を展開して、作業場所とワークスペースの両方に置いてください。
@@ -198,8 +108,46 @@ databricks aitools list                  # 入ったスキルを確かめる
 
 > Omnigent からリポジトリにアクセスするには、Sandbox から GitHub に接続できる必要があります。クローンできないときは、ZIP の方法に切り替えます。
 
-### どちらの場合も: 作業のルールを伝える
-教材を置いたら、Omnigent に次を送ります（そのまま送れます）。
+## 3. Databricks のエージェントスキルを入れる
+Omnigent の中では Claude Code が動いています。Databricks の **エージェントスキル**（[Agent skills for AI coding assistants](https://docs.databricks.com/aws/en/agent-skills/)）を入れておくと、
+Claude Code が AI Search・Model Serving・MLflow の評価・ジョブなどの正しい作り方を参照しながらコードを書くので、ぐっと作業が楽になります。
+次の **A（プロンプト）** を送ります。プロンプトを打つのが手間な方は、**B（シェル）** でも入れられます。
+
+### A. Omnigent にプロンプトで頼む（おすすめ）
+
+```
+Databricks のエージェントスキルを、この環境の Claude Code に入れてください。
+1. databricks --version で CLI のバージョンを確かめる。aitools コマンドがない（databricks aitools --help が失敗する）
+   ほど古ければ、Databricks CLI を最新に更新する。
+2. databricks aitools install --agents claude-code --scope global を実行する。
+3. databricks aitools list で、入ったスキルの一覧を表示する。
+4. 入ったスキルの名前と、それぞれ何に使えるかを 1 行ずつ表にまとめる。
+```
+
+### B. シェルでコマンドを打つ
+Omnigent の画面を **シェル** に切り替えて、次を実行します。
+
+```bash
+databricks --version                     # aitools コマンドがない古い CLI なら、下の 1 行で更新する
+# curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sudo sh
+
+databricks aitools install --agents claude-code --scope global
+databricks aitools list                  # 入ったスキルを確かめる
+```
+
+### 入れたら、リロードして反映させる
+入れたスキルは、そのままでは読み込まれません。次の順で反映させます。
+1. Omnigent の画面を、チャットから **シェル** の画面に切り替える
+2. 次のコマンドを打つ（スキルを含めて読み込み直される）
+
+   ```
+   /reload-plugins
+   ```
+
+3. チャットの画面に戻り、**同じセッションのまま** 手順 4 に進む
+
+## 4. 作業のルールを伝える
+Omnigent に次を送ります（そのまま送れます）。
 
 ```
 これから Databricks のハンズオンを行います。教材は /home/sandbox-agent/workspace の下の、
@@ -224,7 +172,7 @@ handson/README.md と各 Step の README.md を読み、全体の流れを把握
 あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
 ```
 
-## 3. 設定を確認する
+## 5. 設定を確認する
 1. ワークスペースの自分の handson フォルダの `00_setup/00_check_config` ノートブックを開き、右上で **サーバーレス** を選んで **すべて実行** する
 2. 次のように、自分用の名前が表示されることを確認する
 
@@ -238,10 +186,10 @@ Memory: <カタログ>.agent_handson_taro_yamada.agent_memory
 ```
 
 スキーマ・エンドポイント・エクスペリメントは参加者ごとに分かれています。ほかの参加者のものとは名前がぶつかりません。
-過去の受注事例のインデックスだけは、全員で 1 つを共有します（手順 4 で代表者が作ります）。
+過去の受注事例のインデックスだけは、全員で 1 つを共有します（手順 6 で代表者が作ります）。
 `<カタログ>` には、`settings.json` の `instructor.catalog` の値が表示されます。
 
-## 4. 全員で使う AI Search を作る（代表者 1 名だけ）
+## 6. 全員で使う AI Search を作る（代表者 1 名だけ）
 過去の受注事例のテーブル、AI Search のエンドポイント、インデックスを共有スキーマ（`agent_handson_shared`）に作り、参加者全員が読めて検索できるように権限を付けます。
 
 | やり方 | 手順 |
