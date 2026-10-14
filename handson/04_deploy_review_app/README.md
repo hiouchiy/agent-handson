@@ -40,7 +40,19 @@ Review App でほかの人にも試してもらう場合は、その人に Memor
 
 ### 4-3. Review App で人のフィードバックを付ける（Databricks の画面）
 1. ノートブックに表示された Review App の URL を開く（チャットの画面）
-2. 入力欄に、評価データ（`03_evaluation/eval_dataset.json`）のどれかの `characteristics_json` を貼り付けて送る
+2. 入力欄に、次の例のどちらかを、そのままコピーして貼り付けて送る（1 行の JSON です）
+
+   **例 1: 見込みが高そうな会社（重要インフラ・古い制御系・直近の指摘）**
+   ```json
+   {"company_id": "R001", "company_name": "北陸ガスネットワーク株式会社", "industry": "ガス", "is_critical_infra": true, "regulated": true, "legacy_scale": "高", "security_staffing": "逼迫", "size_class": "大", "public_exposure": "中", "recent_trigger": "2026年4月、供給管理システムの未修正の脆弱性を外部から指摘され、緊急点検を実施", "existing_relationship": "取引なし（新規）", "key_facts": ["従業員 約8,200人", "供給管理の制御系を長期運用", "セキュリティ担当は数名で兼務が多い"], "summary": "重要インフラ×古い制御系×直近の外部指摘。"}
+   ```
+
+   **例 2: 見込みが低そうな会社（クラウドネイティブ・小規模・体制は十分）**
+   ```json
+   {"company_id": "R002", "company_name": "株式会社クラウドリンクス", "industry": "SaaS（業務アプリ）", "is_critical_infra": false, "regulated": false, "legacy_scale": "低", "security_staffing": "十分", "size_class": "小", "public_exposure": "中", "recent_trigger": "なし", "existing_relationship": "競合の脆弱性診断サービスを導入済み", "key_facts": ["従業員 約180人", "すべてのシステムをクラウドのマネージドサービスで運用", "専任のセキュリティチームが自社で運用"], "summary": "クラウドネイティブで自社で修正を当てる対象が小さい。"}
+   ```
+
+   普通の質問（例: 「あなたはどんなエージェントですか？」）を送ると、エージェントが使い方と入力の例を返します。
 3. 回答に 👍 か 👎 を付け、理由をコメントに書く
    （例: 「次のアクションが具体的でよい」「情報不足の観点の確認事項が営業目線でない」）
 4. **エクスペリメント** → **トレース** で、いまのトレースを開き、付けたフィードバックが **評価（assessment）** として残っていることを確かめる
