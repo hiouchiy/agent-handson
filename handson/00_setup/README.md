@@ -4,33 +4,103 @@
 
 | # | やること | 誰が |
 |---|---|---|
-| 1 | Omnigent を起動し、Databricks のエージェントスキルを入れる（Omnigent の動作確認を兼ねる） | 全員 |
+| 1 | Omnigent を起動し、ハンズオンで使うコマンドの許可と、Databricks のエージェントスキルを設定する | 全員 |
 | 2 | 同じセッションのまま、教材を受け取る（Omnigent の作業場所と、Databricks のワークスペースの両方に置く） | 全員 |
 | 3 | 設定（自分のスキーマ名など）を確認する | 全員 |
 | 4 | 全員で使う AI Search（エンドポイントとインデックス）を作る | **代表者 1 名だけ** |
 
 代表者が 4 をやっている間に、ほかの参加者は 3 までを済ませます。
 
-## 1. Omnigent を起動し、エージェントスキルを入れる
+## 1. Omnigent を起動し、権限とエージェントスキルを設定する
+
+### 1-1. 起動して、権限のモードを「編集を承認」にする
 1. ブラウザで、講師から案内されたワークスペースの URL の後ろに `/omnigent` を付けたページを開く
 2. **New session** → 実行場所に **Sandbox** を選ぶ
-3. 権限のモードを **手動（Manual）** か **編集を承認（Accept edits）** にする（**auto にしない**）。
-   チャットの設定、または入力欄で `Shift+Tab` を押して切り替えます。
-   - auto のままだと、Omnigent がスキーマやテーブルなどを作るコマンドが、理由を示されずに拒否されることがあります
-   - 手動のモードでは、Omnigent がコマンドを実行する前に許可を求めてきます。内容を見て許可してください
+3. 権限のモードを **Accept edits（編集を承認）** にする。チャットの設定、または入力欄で `Shift+Tab` を押して切り替えます。
+   **auto にはしません。**
+
+> **なぜ auto にしないのか**: auto では、Omnigent がスキーマ・テーブル・AI Search などを作るコマンドが、理由を示されずに拒否されます。
+> さらに auto では、`databricks *` や `python3 *` のような広い許可ルールが効かなくなるため、許可ルールを足しても解決しません。
+> 「編集を承認」のモードなら、次の 1-2 で入れる許可ルールがそのまま効き、ハンズオンで使うコマンドは確認なしで実行されます。
 
 > **ハンズオンの最後まで、このセッション 1 つで作業します。** 新しいセッションを開くと、別の Sandbox（作業場所）が割り当てられ、
-> このセッションで入れたスキルや、置いた教材・作ったコードは引き継がれません。
+> このセッションで入れた設定・スキルや、置いた教材・作ったコードは引き継がれません。
 > 間違えて新しいセッションを開いたときは、元のセッションに戻ります（戻れないときは、新しいセッションで手順 1 からやり直します）。
 
 > Omnigent の中の Databricks CLI は、あなたのユーザーの権限で動きます。あなたができないこと（管理者の権限が必要な操作）は、Omnigent にもできません。
 
+### 1-2. ハンズオンで使うコマンドを許可する（確認はこの 1 回だけ）
+セッションの最初のメッセージで、次を送ります（返事が返ってくれば、Omnigent が動いていることの確認にもなります）。
+Omnigent が設定ファイルに書き込む許可を求めてくるので、**許可** します。以降は、ハンズオンで使うコマンドで確認が出なくなります。
+
+````
+ハンズオンで使うコマンドを、確認なしで実行できるようにしたいです。
+~/.claude/settings.json に、次の permissions を入れてください（ファイルがなければ作り、あれば permissions の allow に足して、
+defaultMode を acceptEdits にする。ほかの設定は消さない）。入れたら、/permissions で反映されたことを確かめてください。
+
+```json
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(databricks *)",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(uv *)",
+      "Bash(unzip *)",
+      "Bash(zip *)",
+      "Bash(git *)",
+      "Bash(curl *)",
+      "Bash(sh *)",
+      "Bash(bash *)",
+      "Bash(cd *)",
+      "Bash(pwd)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(sort *)",
+      "Bash(diff *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(sed *)",
+      "Bash(awk *)",
+      "Bash(jq *)",
+      "Bash(tee *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(rm *)",
+      "Bash(touch *)",
+      "Bash(chmod *)",
+      "Bash(export *)",
+      "Bash(source *)",
+      "Bash(which *)",
+      "Bash(env *)",
+      "Bash(date *)",
+      "Bash(sleep *)",
+      "Bash(timeout *)",
+      "WebFetch(domain:docs.databricks.com)"
+    ]
+  }
+}
+```
+````
+
+> 同じ内容は、教材の `handson/00_setup/claude_settings.json` にもあります。
+> 許可ルールに当てはまらないコマンドが出てきたときだけ、確認のダイアログが出ます。内容を見て許可してください。
+
+### 1-3. Databricks のエージェントスキルを入れる
 Omnigent の中では Claude Code が動いています。Databricks の **エージェントスキル**（[Agent skills for AI coding assistants](https://docs.databricks.com/aws/en/agent-skills/)）を入れておくと、
 Claude Code が AI Search・Model Serving・MLflow の評価・ジョブなどの正しい作り方を参照しながらコードを書くので、ぐっと作業が楽になります。
-セッションの最初のメッセージで、次の **A（プロンプト）** を送ります。返事が返ってくれば、Omnigent が動いていることの確認にもなります。
-プロンプトを打つのが手間な方は、**B（シェル）** でも入れられます。
+次の **A（プロンプト）** を送ります。プロンプトを打つのが手間な方は、**B（シェル）** でも入れられます。
 
-### A. Omnigent にプロンプトで頼む（おすすめ）
+#### A. Omnigent にプロンプトで頼む（おすすめ）
 
 ```
 Databricks のエージェントスキルを、この環境の Claude Code に入れてください。
@@ -41,7 +111,7 @@ Databricks のエージェントスキルを、この環境の Claude Code に�
 4. 入ったスキルの名前と、それぞれ何に使えるかを 1 行ずつ表にまとめる。
 ```
 
-### B. シェルでコマンドを打つ
+#### B. シェルでコマンドを打つ
 Omnigent の画面を **シェル** に切り替えて、次を実行します。
 
 ```bash
@@ -52,7 +122,7 @@ databricks aitools install --agents claude-code --scope global
 databricks aitools list                  # 入ったスキルを確かめる
 ```
 
-### 入れたら、リロードして反映させる
+### 1-4. リロードして反映させる
 入れたスキルは、そのままでは読み込まれません。次の順で反映させます。
 1. Omnigent の画面を、チャットから **シェル** の画面に切り替える
 2. 次のコマンドを打つ（スキルを含めて読み込み直される）
