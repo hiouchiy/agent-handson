@@ -8,7 +8,7 @@
 | 2 | 教材を受け取る（Omnigent の作業場所と、Databricks のワークスペースの両方に置く）。最初の確認で、以降の Bash を確認なしにする | 全員 |
 | 3 | Databricks のエージェントスキルを入れて、リロードする | 全員 |
 | 4 | 作業のルールを Omnigent に伝える | 全員 |
-| 5 | 設定（自分のスキーマ名など）を確認する | 全員 |
+| 5 | 設定ファイルに、カタログと SQL ウェアハウスを入れる（SQL ウェアハウスは Omnigent が調べて入れる） | 全員 |
 | 6 | 全員で使う AI Search（エンドポイントとインデックス）を作る | **代表者 1 名だけ** |
 
 教材を最初に受け取るので、手順 3 以降は、ワークスペースに取り込んだこの README を開いて、プロンプトをコピーしながら進められます。
@@ -51,18 +51,18 @@
 
 ### 設定ファイル `handson/settings.json`
 環境や参加者によって変わる値は、すべて `handson/settings.json` に入っています。ノートブックもプロンプトも、この値を読みます。
-**参加者が書き換えるのは `participant` の 2 つだけ** で、教材を受け取るときに Omnigent に入れてもらいます。
+値は Omnigent に入れてもらいます。参加者が自分で決めて入れるのは、講師から案内されたカタログの名前だけです（手順 5）。
 
 | 区分 | 項目 | 入れる人 |
 |---|---|---|
-| `instructor` | ワークスペースの URL・カタログ・SQL ウェアハウス・共有スキーマ・AI Search のエンドポイント・基盤モデル | 講師（配る前に入れてある） |
-| `participant` | `user_email`（自分のメールアドレス）・`materials_folder`（教材のフォルダ名） | 参加者（このあとの手順で入れる） |
+| `instructor` | ワークスペースの URL・カタログ・SQL ウェアハウス・共有スキーマ・AI Search のエンドポイント・基盤モデル | 参加者が手順 5 で入れる（カタログは講師の案内、SQL ウェアハウスと URL は Omnigent が調べる）。それ以外は既定のまま |
+| `participant` | `user_email`（自分のメールアドレス）・`materials_folder`（教材のフォルダ名） | Omnigent が手順 2 で入れる |
 
 受け取り方は 2 通りあります。講師の案内に従って、どちらかを選びます。
 
 | | 基本: ZIP から | 別の方法: GitHub から |
 |---|---|---|
-| 使う場面 | 通常はこちら | 講師から GitHub のリポジトリと設定の値を案内されたとき |
+| 使う場面 | 通常はこちら | 講師から GitHub のリポジトリを案内されたとき |
 | 教材の置き場所 | 講師から受け取った ZIP（`agent-handson-main.zip`） | GitHub のリポジトリ（非公開） |
 | 教材のフォルダ名（`materials_folder`） | `agent-handson-main` | `agent-handson` |
 
@@ -89,21 +89,18 @@
 > instructor.catalog と instructor.shared_schema です。講師から案内された値を使ってください」
 
 ### 別の方法: GitHub から
-講師から、教材のリポジトリの URL と、`settings.json` の `instructor` に入れる値を案内されたときの方法です。
-次のメッセージの `<...>` を、講師の案内に置き換えて送ります。
+講師から、教材のリポジトリの URL を案内されたときの方法です。次のメッセージの `<...>` を、講師の案内に置き換えて送ります。
 
 ```
 次の Git リポジトリを、/home/sandbox-agent/workspace の下にクローンしてください。
 <講師から案内されたリポジトリの URL>
 クローンしたら、次をしてください。
 1. /home/sandbox-agent/workspace/agent-handson/handson/ フォルダがあることを確かめる。
-2. handson/settings.json の instructor に、次の値を入れる。
-   <講師から案内された instructor の値（workspace_url・catalog・warehouse_id など）>
-3. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる。
+2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる。
    participant.materials_folder は agent-handson にする。
-4. フォルダを、Databricks CLI で私のワークスペースに取り込む。
+3. フォルダを、Databricks CLI で私のワークスペースに取り込む。
    取り込み先は /Workspace/Users/<user_email>/<materials_folder>（どちらも settings.json の participant の値）。
-5. 取り込み先に handson/00_setup/00_check_config ができたことを確かめ、取り込み先のパスを教える。
+4. 取り込み先に handson/00_setup/00_check_config ができたことを確かめ、取り込み先のパスを教える。
 ```
 
 > Omnigent からリポジトリにアクセスするには、Sandbox から GitHub に接続できる必要があります。クローンできないときは、ZIP の方法に切り替えます。
@@ -172,22 +169,39 @@ handson/README.md と各 Step の README.md を読み、全体の流れを把握
 あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
 ```
 
-## 5. 設定を確認する
-1. ワークスペースの自分の handson フォルダの `00_setup/00_check_config` ノートブックを開き、右上で **サーバーレス** を選んで **すべて実行** する
-2. 次のように、自分用の名前が表示されることを確認する
+## 5. 設定ファイルに、カタログと SQL ウェアハウスを入れる
+Omnigent の作業場所にある `handson/settings.json` の `instructor` に、このハンズオンで使うカタログと SQL ウェアハウスを入れます。
+カタログは講師から案内された名前を使います。SQL ウェアハウスとワークスペースの URL は、Omnigent に調べて入れてもらいます。
+次のメッセージの `<講師から案内されたカタログ>` だけを置き換えて送ります。
 
 ```
-参加者: taro.yamada@example.com
-スキーマ: <カタログ>.agent_handson_taro_yamada
-共有のインデックス: <カタログ>.agent_handson_shared.reference_case_index
-Memory: <カタログ>.agent_handson_taro_yamada.agent_memory
-エンドポイント: scoring-agent-taro-yamada
-エクスペリメント: /Users/taro.yamada@example.com/agent_handson_scoring
+handson/settings.json の instructor に、このハンズオンで使う値を入れてください。
+1. catalog に <講師から案内されたカタログ> を入れる。databricks catalogs get でそのカタログがあり、私が使えることを確かめる。
+2. warehouse_id に、私が使える SQL ウェアハウスの ID を入れる。databricks warehouses list で調べ、
+   1 つしかなければそれを、複数あれば名前・種類（サーバーレスか）・状態の一覧を見せて、私に選ばせる。
+3. workspace_url に、いまの Databricks CLI の接続先のワークスペースの URL を入れる。
+4. ほかの項目（shared_schema・ai_search_endpoint・基盤モデル）は既定のままにする。llm_endpoint・extract_llm_endpoint・
+   embedding_endpoint の基盤モデルが、databricks serving-endpoints get でワークスペースにあることを確かめる。
+5. 書き換えた settings.json を、ワークスペースの取り込み先（/Workspace/Users/<user_email>/<materials_folder>/handson/settings.json）
+   にも上書きで反映する。
+6. handson/_config.py の決め方で、私のスキーマ名・共有のインデックス名・Memory の名前・エンドポイント名・エクスペリメントの
+   パスを求めて、表にして見せる。
 ```
+
+次のような表が返ってくれば完了です。
+
+| 項目 | 例 |
+|---|---|
+| 自分のスキーマ | `<カタログ>.agent_handson_taro_yamada` |
+| 共有のインデックス | `<カタログ>.agent_handson_shared.reference_case_index` |
+| Memory | `<カタログ>.agent_handson_taro_yamada.agent_memory` |
+| エンドポイント | `scoring-agent-taro-yamada` |
+| エクスペリメント | `/Users/taro.yamada@example.com/agent_handson_scoring` |
 
 スキーマ・エンドポイント・エクスペリメントは参加者ごとに分かれています。ほかの参加者のものとは名前がぶつかりません。
 過去の受注事例のインデックスだけは、全員で 1 つを共有します（手順 6 で代表者が作ります）。
-`<カタログ>` には、`settings.json` の `instructor.catalog` の値が表示されます。
+
+> 講師が `settings.json` に値を入れた ZIP を配った場合は、この手順は値の確認だけになります（1・2 で入っている値をそのまま確かめる）。
 
 ## 6. 全員で使う AI Search を作る（代表者 1 名だけ）
 過去の受注事例のテーブル、AI Search のエンドポイント、インデックスを共有スキーマ（`agent_handson_shared`）に作り、参加者全員が読めて検索できるように権限を付けます。

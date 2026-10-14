@@ -27,8 +27,10 @@
 
 ### `handson/settings.json` に値を入れる
 環境や参加者によって変わる値は `handson/settings.json` だけにあります（ノートブックの `_config.py` とすべてのプロンプトがここを読む）。
-教材を配る前に、`instructor` の値を当日の環境に合わせて入れます。`participant` は空のままにします（参加者が Step 0 で入れる）。
-**リポジトリの `settings.json` は空のままにしておき、配る ZIP の中のものだけに値を入れます**（当日の環境の情報をリポジトリに残さないため。手順は下の「教材の配り方」）。
+参加者は Step 0 の手順 5 で、Omnigent に `instructor` の値を入れてもらいます（カタログは講師が案内した名前、SQL ウェアハウスとワークスペースの URL は Omnigent が調べる）。
+講師は、**参加者に使ってもらうカタログの名前を当日案内します**。SQL ウェアハウスが複数ある場合は、どれを使うかも案内します。
+- 手間を減らしたい場合は、配る ZIP の中の `settings.json` に、あらかじめ値を入れておいても構いません（参加者の手順 5 は確認だけになる）
+- **リポジトリの `settings.json` は空のままにします**（当日の環境の情報をリポジトリに残さないため）
 
 | 項目 | 入れる値 |
 |---|---|
@@ -48,17 +50,17 @@
 
 | | 基本: ZIP から | 別の方法: GitHub から |
 |---|---|---|
-| 講師の準備 | 下の手順で ZIP を作り（`settings.json` の `instructor` を埋める）、参加者に配る | 参加者の GitHub アカウントに、教材のリポジトリ（非公開）の読み取り権限を付ける。`instructor` に入れる値を参加者に案内する |
-| 参加者がすること | Omnigent のチャットに ZIP を添付して、展開と取り込みを頼む | Omnigent に、クローンと `instructor` の値の書き込みと取り込みを頼む |
+| 講師の準備 | 下の手順で ZIP を作り（`settings.json` の `instructor` を埋める）、参加者に配る | 参加者の GitHub アカウントに、教材のリポジトリ（非公開）の読み取り権限を付ける |
+| 参加者がすること | Omnigent のチャットに ZIP を添付して、展開と取り込みを頼む | Omnigent に、クローンと取り込みを頼む |
 
 > お客様に配るときは **ZIP から** にします。GitHub から渡すと、リポジトリの持ち主などが見えてしまいます。
 
 **ZIP の準備**（ZIP を作って参加者に配る。2・3 は、参加者が ZIP をチャットに添付できないときの予備）
 1. GitHub の教材のリポジトリで **Code** → **Download ZIP** を押し、`agent-handson-main.zip` を手に入れる。
-   展開して、`handson/instructor/`（評価データの種明かし）を消し、`handson/settings.json` の `instructor` に当日の値を入れてから、同じ名前で ZIP にし直す
+   展開して、`handson/instructor/`（評価データの種明かし）を消してから、同じ名前で ZIP にし直す（`settings.json` に当日の値を入れておく場合は、ここで入れる）
    ```bash
    unzip agent-handson-main.zip && rm -rf agent-handson-main/handson/instructor
-   # agent-handson-main/handson/settings.json の instructor に当日の値を入れる（エディタで編集）
+   # （任意）agent-handson-main/handson/settings.json の instructor に当日の値を入れる
    rm agent-handson-main.zip && zip -r agent-handson-main.zip agent-handson-main
    ```
 2. Databricks で次を実行する（SQL エディタかノートブック）
