@@ -1,0 +1,29 @@
+[
+  {
+    "company_id": "E001",
+    "characteristics_json": "{\"company_id\":\"E001\",\"company_name\":\"東和電力ネットワーク株式会社\",\"industry\":\"電力（送配電）\",\"is_critical_infra\":true,\"regulated\":true,\"legacy_scale\":\"高\",\"security_staffing\":\"逼迫\",\"size_class\":\"大\",\"public_exposure\":\"中\",\"recent_trigger\":\"2026年5月、送配電管理システムへの不正アクセスで一部データが閲覧された可能性を公表し、経済産業省へ報告\",\"existing_relationship\":\"既存取引あり（法人携帯）。競合 A 社の脆弱性管理サービス（MSS）を主要システムに導入済み。\",\"key_facts\":[\"従業員 約21,000人、売上 約2.8兆円\",\"送配電の制御系には 20 年以上運用しているシステムが多い\",\"顧客向けの Web サービスと遠隔監視の接続口をインターネットに公開している\",\"セキュリティ担当は 10 名ほどで、採用が追いついていない\",\"2026年5月に不正アクセスを公表し、当局へ報告\"],\"summary\":\"重要インフラ×古いシステム×直近のインシデント。競合の MSS が入っている。\"}",
+    "expectations": {
+      "expected_tier": "A",
+      "expected_adjustment_min": -5,
+      "expected_adjustment_max": 0
+    }
+  },
+  {
+    "company_id": "E002",
+    "characteristics_json": "{\"company_id\": \"E002\", \"company_name\": \"みちのく共同銀行株式会社\", \"industry\": \"金融（地方銀行）\", \"is_critical_infra\": false, \"regulated\": true, \"legacy_scale\": \"高\", \"security_staffing\": \"一部逼迫\", \"size_class\": \"中\", \"public_exposure\": \"中\", \"recent_trigger\": \"2026年6月、金融庁のサイバーセキュリティ・ガイドラインに基づく自己評価で、脆弱性対応の遅れを指摘された\", \"existing_relationship\": \"取引なし（新規）\", \"key_facts\": [\"連結の従業員 約4,000人、経常収益 約900億円\", \"勘定系は COBOL を含む長期運用のシステム\", \"インターネットバンキングを提供している\", \"システム部門は兼務が多く、修正の適用が遅れがち\"], \"summary\": \"規制業種×古いシステム×当局のガイドライン対応。\"}",
+    "expectations": {
+      "expected_axis_levels": {
+        "size_budget": 4
+      }
+    }
+  },
+  {
+    "company_id": "E003",
+    "characteristics_json": "{\"company_id\": \"E003\", \"company_name\": \"さくら総合医療グループ\", \"industry\": \"医療（病院グループ）\", \"is_critical_infra\": true, \"regulated\": true, \"legacy_scale\": \"中\", \"security_staffing\": \"不明\", \"size_class\": \"大\", \"public_exposure\": \"不明\", \"recent_trigger\": \"2026年7月、厚生労働省の医療機関向けセキュリティガイドラインの改定に合わせた対応を表明\", \"existing_relationship\": \"取引なし（新規）\", \"key_facts\": [\"全国で 15 病院を運営し、職員は約9,000人\", \"電子カルテと周辺の部門システムを病院ごとに運用している\", \"業界でランサムウェアの被害が続いている\"], \"summary\": \"医療×ガイドライン対応。体制や公開資産の情報は少ない。\"}",
+    "expectations": {
+      "guidelines": [
+        "score_result.next_action の最後に「確認事項:」という見出しがあり、情報が足りなかった観点（score_result.axis_details で info_missing が true の観点）ごとに、最初の打ち合わせで先方に確認する具体的な質問が書かれていること。"
+      ]
+    }
+  }
+]

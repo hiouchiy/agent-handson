@@ -1,0 +1,16 @@
+{
+  "instructor": {
+    "workspace_url": "",
+    "catalog": "",
+    "warehouse_id": "",
+    "shared_schema": "agent_handson_shared",
+    "ai_search_endpoint": "agent-handson-ai-search",
+    "llm_endpoint": "databricks-claude-sonnet-5",
+    "extract_llm_endpoint": "databricks-gpt-5-4-mini",
+    "embedding_endpoint": "databricks-gte-large-en"
+  },
+  "participant": {
+    "user_email": "",
+    "materials_folder": "agent-handson-main"
+  }
+}

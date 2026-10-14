@@ -1,0 +1,410 @@
+{
+ "datasets": [
+  {
+   "name": "ds_score",
+   "displayName": "顧客商材スコア",
+   "queryLines": [
+    "SELECT company_id, company_name, industry, score, tier, ",
+    "need_vuln, critical_regulated, staffing_gap, size_budget, timing, relationship_adjustment, ",
+    "CASE WHEN tier IN ('A', 'B') THEN 1 ELSE 0 END AS is_hot_lead, ",
+    "confidence, next_action, rationale, key_signals, matched_cases, rubric_version, _scored_at ",
+    "FROM customer_product_score ORDER BY score DESC"
+   ]
+  }
+ ],
+ "pages": [
+  {
+   "name": "overview",
+   "displayName": "見込み顧客",
+   "pageType": "PAGE_TYPE_CANVAS",
+   "layoutVersion": "GRID_V1",
+   "layout": [
+    {
+     "widget": {
+      "name": "title",
+      "multilineTextboxSpec": {
+       "lines": [
+        "# 見込み顧客スコア"
+       ]
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 0,
+      "width": 12,
+      "height": 1
+     }
+    },
+    {
+     "widget": {
+      "name": "subtitle",
+      "multilineTextboxSpec": {
+       "lines": [
+        "スコアリングエージェントが採点した結果（スコア 0〜100 / Tier A: 80 以上・B: 60〜79・C: 60 未満）。上から順に、訪問先を検討します。"
+       ]
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 1,
+      "width": 12,
+      "height": 1
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi-companies",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "ds_score",
+         "fields": [
+          {
+           "name": "count(company_id)",
+           "expression": "COUNT(`company_id`)"
+          }
+         ],
+         "disaggregated": false
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "count(company_id)",
+         "displayName": "採点した会社"
+        }
+       },
+       "frame": {
+        "showTitle": true,
+        "title": "採点した会社"
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 2,
+      "width": 4,
+      "height": 3
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi-hot",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "ds_score",
+         "fields": [
+          {
+           "name": "sum(is_hot_lead)",
+           "expression": "SUM(`is_hot_lead`)"
+          }
+         ],
+         "disaggregated": false
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "sum(is_hot_lead)",
+         "displayName": "優良見込み（Tier A・B）"
+        }
+       },
+       "frame": {
+        "showTitle": true,
+        "title": "優良見込み（Tier A・B）"
+       }
+      }
+     },
+     "position": {
+      "x": 4,
+      "y": 2,
+      "width": 4,
+      "height": 3
+     }
+    },
+    {
+     "widget": {
+      "name": "kpi-avg",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "ds_score",
+         "fields": [
+          {
+           "name": "avg(score)",
+           "expression": "AVG(`score`)"
+          }
+         ],
+         "disaggregated": false
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "counter",
+       "encodings": {
+        "value": {
+         "fieldName": "avg(score)",
+         "displayName": "平均スコア"
+        }
+       },
+       "frame": {
+        "showTitle": true,
+        "title": "平均スコア"
+       }
+      }
+     },
+     "position": {
+      "x": 8,
+      "y": 2,
+      "width": 4,
+      "height": 3
+     }
+    },
+    {
+     "widget": {
+      "name": "score-by-axis",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "ds_score",
+         "fields": [
+          {
+           "name": "company_name",
+           "expression": "`company_name`"
+          },
+          {
+           "name": "sum(need_vuln)",
+           "expression": "SUM(`need_vuln`)"
+          },
+          {
+           "name": "sum(critical_regulated)",
+           "expression": "SUM(`critical_regulated`)"
+          },
+          {
+           "name": "sum(staffing_gap)",
+           "expression": "SUM(`staffing_gap`)"
+          },
+          {
+           "name": "sum(size_budget)",
+           "expression": "SUM(`size_budget`)"
+          },
+          {
+           "name": "sum(timing)",
+           "expression": "SUM(`timing`)"
+          }
+         ],
+         "disaggregated": false
+        }
+       }
+      ],
+      "spec": {
+       "version": 3,
+       "widgetType": "bar",
+       "encodings": {
+        "y": {
+         "fieldName": "company_name",
+         "scale": {
+          "type": "categorical",
+          "sort": {
+           "by": "value"
+          }
+         },
+         "displayName": "会社"
+        },
+        "x": {
+         "scale": {
+          "type": "quantitative"
+         },
+         "fields": [
+          {
+           "fieldName": "sum(need_vuln)",
+           "displayName": "① 脆弱性リスク"
+          },
+          {
+           "fieldName": "sum(critical_regulated)",
+           "displayName": "② 重要インフラ・規制"
+          },
+          {
+           "fieldName": "sum(staffing_gap)",
+           "displayName": "③ 人材不足"
+          },
+          {
+           "fieldName": "sum(size_budget)",
+           "displayName": "④ 企業規模"
+          },
+          {
+           "fieldName": "sum(timing)",
+           "displayName": "⑤ きっかけ"
+          }
+         ]
+        }
+       },
+       "frame": {
+        "showTitle": true,
+        "title": "観点ごとの点数（関係性の補正の前）"
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 5,
+      "width": 12,
+      "height": 5
+     }
+    },
+    {
+     "widget": {
+      "name": "details",
+      "queries": [
+       {
+        "name": "main_query",
+        "query": {
+         "datasetName": "ds_score",
+         "fields": [
+          {
+           "name": "company_name",
+           "expression": "`company_name`"
+          },
+          {
+           "name": "industry",
+           "expression": "`industry`"
+          },
+          {
+           "name": "score",
+           "expression": "`score`"
+          },
+          {
+           "name": "tier",
+           "expression": "`tier`"
+          },
+          {
+           "name": "relationship_adjustment",
+           "expression": "`relationship_adjustment`"
+          },
+          {
+           "name": "confidence",
+           "expression": "`confidence`"
+          },
+          {
+           "name": "next_action",
+           "expression": "`next_action`"
+          },
+          {
+           "name": "matched_cases",
+           "expression": "`matched_cases`"
+          },
+          {
+           "name": "rationale",
+           "expression": "`rationale`"
+          }
+         ],
+         "disaggregated": true
+        }
+       }
+      ],
+      "spec": {
+       "version": 2,
+       "widgetType": "table",
+       "encodings": {
+        "columns": [
+         {
+          "fieldName": "company_name",
+          "displayName": "会社"
+         },
+         {
+          "fieldName": "industry",
+          "displayName": "業種"
+         },
+         {
+          "fieldName": "score",
+          "displayName": "スコア"
+         },
+         {
+          "fieldName": "tier",
+          "displayName": "Tier"
+         },
+         {
+          "fieldName": "relationship_adjustment",
+          "displayName": "関係性の補正"
+         },
+         {
+          "fieldName": "confidence",
+          "displayName": "確からしさ"
+         },
+         {
+          "fieldName": "next_action",
+          "displayName": "次のアクション"
+         },
+         {
+          "fieldName": "matched_cases",
+          "displayName": "参考にした事例"
+         },
+         {
+          "fieldName": "rationale",
+          "displayName": "根拠"
+         }
+        ]
+       },
+       "frame": {
+        "showTitle": true,
+        "title": "採点の詳細"
+       }
+      }
+     },
+     "position": {
+      "x": 0,
+      "y": 10,
+      "width": 12,
+      "height": 7
+     }
+    }
+   ]
+  }
+ ],
+ "uiSettings": {
+  "theme": {
+   "canvasBackgroundColor": {
+    "light": "#FCFCFC",
+    "dark": "#1F272D"
+   },
+   "widgetBackgroundColor": {
+    "light": "#FFFFFF",
+    "dark": "#11171C"
+   },
+   "widgetBorderColor": {
+    "light": "#FFFFFF",
+    "dark": "#11171C"
+   },
+   "fontColor": {
+    "light": "#11171C",
+    "dark": "#E8ECF0"
+   },
+   "selectionColor": {
+    "light": "#2272B4",
+    "dark": "#8ACAFF"
+   },
+   "visualizationColors": [
+    "#0072B2",
+    "#E69F00",
+    "#009E73",
+    "#CC79A7",
+    "#D55E00",
+    "#56B4E9",
+    "#F0E442"
+   ],
+   "widgetHeaderAlignment": "LEFT"
+  }
+ }
+}

@@ -1,0 +1,183 @@
+# Step 0 準備（15 分）
+
+## このステップでやること
+
+| # | やること | 誰が |
+|---|---|---|
+| 1 | Omnigent を起動し、Databricks のエージェントスキルを入れる（Omnigent の動作確認を兼ねる） | 全員 |
+| 2 | 同じセッションのまま、教材を受け取る（Omnigent の作業場所と、Databricks のワークスペースの両方に置く） | 全員 |
+| 3 | 設定（自分のスキーマ名など）を確認する | 全員 |
+| 4 | 全員で使う AI Search（エンドポイントとインデックス）を作る | **代表者 1 名だけ** |
+
+代表者が 4 をやっている間に、ほかの参加者は 3 までを済ませます。
+
+## 1. Omnigent を起動し、エージェントスキルを入れる
+1. ブラウザで、講師から案内されたワークスペースの URL の後ろに `/omnigent` を付けたページを開く
+2. **New session** → 実行場所に **Sandbox** を選ぶ
+3. 権限のモードを **手動（Manual）** か **編集を承認（Accept edits）** にする（**auto にしない**）。
+   チャットの設定、または入力欄で `Shift+Tab` を押して切り替えます。
+   - auto のままだと、Omnigent がスキーマやテーブルなどを作るコマンドが、理由を示されずに拒否されることがあります
+   - 手動のモードでは、Omnigent がコマンドを実行する前に許可を求めてきます。内容を見て許可してください
+
+> **ハンズオンの最後まで、このセッション 1 つで作業します。** 新しいセッションを開くと、別の Sandbox（作業場所）が割り当てられ、
+> このセッションで入れたスキルや、置いた教材・作ったコードは引き継がれません。
+> 間違えて新しいセッションを開いたときは、元のセッションに戻ります（戻れないときは、新しいセッションで手順 1 からやり直します）。
+
+> Omnigent の中の Databricks CLI は、あなたのユーザーの権限で動きます。あなたができないこと（管理者の権限が必要な操作）は、Omnigent にもできません。
+
+Omnigent の中では Claude Code が動いています。Databricks の **エージェントスキル**（[Agent skills for AI coding assistants](https://docs.databricks.com/aws/en/agent-skills/)）を入れておくと、
+Claude Code が AI Search・Model Serving・MLflow の評価・ジョブなどの正しい作り方を参照しながらコードを書くので、ぐっと作業が楽になります。
+セッションの最初のメッセージで、次の **A（プロンプト）** を送ります。返事が返ってくれば、Omnigent が動いていることの確認にもなります。
+プロンプトを打つのが手間な方は、**B（シェル）** でも入れられます。
+
+### A. Omnigent にプロンプトで頼む（おすすめ）
+
+```
+Databricks のエージェントスキルを、この環境の Claude Code に入れてください。
+1. databricks --version で CLI のバージョンを確かめる。aitools コマンドがない（databricks aitools --help が失敗する）
+   ほど古ければ、Databricks CLI を最新に更新する。
+2. databricks aitools install --agents claude-code --scope global を実行する。
+3. databricks aitools list で、入ったスキルの一覧を表示する。
+4. 入ったスキルの名前と、それぞれ何に使えるかを 1 行ずつ表にまとめる。
+```
+
+### B. シェルでコマンドを打つ
+Omnigent の画面を **シェル** に切り替えて、次を実行します。
+
+```bash
+databricks --version                     # aitools コマンドがない古い CLI なら、下の 1 行で更新する
+# curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sudo sh
+
+databricks aitools install --agents claude-code --scope global
+databricks aitools list                  # 入ったスキルを確かめる
+```
+
+### 入れたら、リロードして反映させる
+入れたスキルは、そのままでは読み込まれません。次の順で反映させます。
+1. Omnigent の画面を、チャットから **シェル** の画面に切り替える
+2. 次のコマンドを打つ（スキルを含めて読み込み直される）
+
+   ```
+   /reload-plugins
+   ```
+
+3. チャットの画面に戻り、**同じセッションのまま** 手順 2 に進む
+
+## 2. 教材を受け取る
+手順 1 と **同じセッション** で続けます（新しいセッションは開きません）。
+
+教材は、**Omnigent の作業場所**（`/home/sandbox-agent/workspace`。コードを書く場所）と、
+**Databricks のワークスペース**（ノートブックを開いて実行する場所）の両方に置きます。
+
+### 設定ファイル `handson/settings.json`
+環境や参加者によって変わる値は、すべて `handson/settings.json` に入っています。ノートブックもプロンプトも、この値を読みます。
+**参加者が書き換えるのは `participant` の 2 つだけ** で、教材を受け取るときに Omnigent に入れてもらいます。
+
+| 区分 | 項目 | 入れる人 |
+|---|---|---|
+| `instructor` | ワークスペースの URL・カタログ・SQL ウェアハウス・共有スキーマ・AI Search のエンドポイント・基盤モデル | 講師（配る前に入れてある） |
+| `participant` | `user_email`（自分のメールアドレス）・`materials_folder`（教材のフォルダ名） | 参加者（このあとの手順で入れる） |
+
+受け取り方は 2 通りあります。講師の案内に従って、どちらかを選びます。
+
+| | 基本: ZIP から | 別の方法: GitHub から |
+|---|---|---|
+| 使う場面 | 通常はこちら | 講師から GitHub のリポジトリと設定の値を案内されたとき |
+| 教材の置き場所 | 講師から受け取った ZIP（`agent-handson-main.zip`） | GitHub のリポジトリ（非公開） |
+| 教材のフォルダ名（`materials_folder`） | `agent-handson-main` | `agent-handson` |
+
+以降、ワークスペースに置いた `<教材のフォルダ>/handson/` を「自分の handson フォルダ」と呼びます。
+
+### 基本: ZIP から
+1. Omnigent のチャットの入力欄で、ファイルを添付するボタンから、講師から受け取った ZIP（`agent-handson-main.zip`）を選ぶ
+2. ZIP を添付したまま、次のメッセージを送る（そのまま送れます。書き換える箇所はありません）
+
+```
+添付した ZIP（ハンズオンの教材）を展開して、作業場所とワークスペースの両方に置いてください。
+1. ZIP を /home/sandbox-agent/workspace に展開し、
+   /home/sandbox-agent/workspace/agent-handson-main/handson/ フォルダがあることを確かめる。
+2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる。
+   participant.materials_folder は agent-handson-main のままにする。
+3. 展開したフォルダを、Databricks CLI で私のワークスペースに取り込む。
+   取り込み先は /Workspace/Users/<user_email>/<materials_folder>（どちらも settings.json の participant の値）。
+4. 取り込み先に handson/00_setup/00_check_config ができたことを確かめ、取り込み先のパスを教える。
+```
+
+> **ZIP を添付できないとき**: 講師が共有の Volume に同じ ZIP を置いている場合は、1 の代わりに次を頼みます。
+> 「Databricks CLI で、共有の Volume にある agent-handson-main.zip を /home/sandbox-agent/workspace にコピーして展開してください。
+> Volume は /Volumes/<カタログ>/<共有スキーマ>/materials/ で、カタログと共有スキーマは、ZIP の中の handson/settings.json の
+> instructor.catalog と instructor.shared_schema です。講師から案内された値を使ってください」
+
+### 別の方法: GitHub から
+講師から、教材のリポジトリの URL と、`settings.json` の `instructor` に入れる値を案内されたときの方法です。
+次のメッセージの `<...>` を、講師の案内に置き換えて送ります。
+
+```
+次の Git リポジトリを、/home/sandbox-agent/workspace の下にクローンしてください。
+<講師から案内されたリポジトリの URL>
+クローンしたら、次をしてください。
+1. /home/sandbox-agent/workspace/agent-handson/handson/ フォルダがあることを確かめる。
+2. handson/settings.json の instructor に、次の値を入れる。
+   <講師から案内された instructor の値（workspace_url・catalog・warehouse_id など）>
+3. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる。
+   participant.materials_folder は agent-handson にする。
+4. フォルダを、Databricks CLI で私のワークスペースに取り込む。
+   取り込み先は /Workspace/Users/<user_email>/<materials_folder>（どちらも settings.json の participant の値）。
+5. 取り込み先に handson/00_setup/00_check_config ができたことを確かめ、取り込み先のパスを教える。
+```
+
+> Omnigent からリポジトリにアクセスするには、Sandbox から GitHub に接続できる必要があります。クローンできないときは、ZIP の方法に切り替えます。
+
+### どちらの場合も: 作業のルールを伝える
+教材を置いたら、Omnigent に次を送ります（そのまま送れます）。
+
+```
+これから Databricks のハンズオンを行います。教材は /home/sandbox-agent/workspace の下の、
+handson/settings.json の participant.materials_folder のフォルダの handson/ にあります。
+handson/README.md と各 Step の README.md を読み、全体の流れを把握してください。
+
+作業のルール:
+- 環境や私によって変わる値（ワークスペース・カタログ・スキーマ・メールアドレス・エンドポイント名など）は、
+  プロンプトに書いていなくても、必ず handson/settings.json と handson/_config.py の決め方から求めてください。
+- 私が作ってほしいコードは handson/my_work/ に置いてください。
+- ファイルの形は次のとおりにしてください。
+  - エージェント本体（LangGraph のグラフ・採点基準・Memory の読み書き）は、普通の Python ファイル（.py）にする。
+    先頭に "# Databricks notebook source" を付けない（ノートブックにしない。ほかのファイルから import するため）。
+  - エージェントを読み込んで動かす・評価する・デプロイするコードと、データの準備・ジョブのタスクは、
+    Databricks のノートブックにする（ソース形式。先頭が "# Databricks notebook source"、セルの区切りは
+    "# COMMAND ----------"、説明は日本語の Markdown セル）。
+- 作ったファイルは、Databricks CLI で私のワークスペースの handson フォルダに反映してください。
+  反映先は /Workspace/Users/<user_email>/<materials_folder>/handson/my_work/（settings.json の participant の値）。
+  例: databricks workspace import-dir handson/my_work <反映先> --overwrite
+  （先頭が "# Databricks notebook source" の .py はノートブックとして、それ以外の .py はファイルとして取り込まれます）
+読み込みが終わったら、全体の流れを 5 行で要約してください。
+あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
+```
+
+## 3. 設定を確認する
+1. ワークスペースの自分の handson フォルダの `00_setup/00_check_config` ノートブックを開き、右上で **サーバーレス** を選んで **すべて実行** する
+2. 次のように、自分用の名前が表示されることを確認する
+
+```
+参加者: taro.yamada@example.com
+スキーマ: <カタログ>.agent_handson_taro_yamada
+共有のインデックス: <カタログ>.agent_handson_shared.reference_case_index
+Memory: <カタログ>.agent_handson_taro_yamada.agent_memory
+エンドポイント: scoring-agent-taro-yamada
+エクスペリメント: /Users/taro.yamada@example.com/agent_handson_scoring
+```
+
+スキーマ・エンドポイント・エクスペリメントは参加者ごとに分かれています。ほかの参加者のものとは名前がぶつかりません。
+過去の受注事例のインデックスだけは、全員で 1 つを共有します（手順 4 で代表者が作ります）。
+`<カタログ>` には、`settings.json` の `instructor.catalog` の値が表示されます。
+
+## 4. 全員で使う AI Search を作る（代表者 1 名だけ）
+過去の受注事例のテーブル、AI Search のエンドポイント、インデックスを共有スキーマ（`agent_handson_shared`）に作り、参加者全員が読めて検索できるように権限を付けます。
+
+| やり方 | 手順 |
+|---|---|
+| **基本: プロンプト** | [shared/prompt_shared_setup.md](shared/prompt_shared_setup.md) のプロンプトを、代表者の Omnigent に送る |
+| うまくいかないとき: ノートブック | [shared/00_shared_setup](shared/00_shared_setup.py) を開いて **すべて実行** する（同じものができる） |
+
+インデックスがオンラインになるまで 10 分ほどかかります。できたら代表者は、参加者全員に「できた」と伝えます。
+確かめ方: **カタログ** → `agent_handson_shared` → `reference_case_index` を開き、**検索** で「病院 電子カルテ 人手不足」と入れて RC03 が一番上に来ること。
