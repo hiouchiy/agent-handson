@@ -1,7 +1,7 @@
 # Step 1 自分のデータを用意し、共有の AI Search で事例を検索する（20 分）
 
 ## このステップでやること
-1. Omnigent に、自分のデータを用意するノートブックを作ってもらい、実行する
+1. Omnigent に、自分のデータを用意するノートブックを作ってもらい、実行する（Omnigent に実行してもらうか、自分で実行する）
 2. Step 0 で代表者が作った **共有の AI Search（旧 Vector Search）インデックス** を Databricks の画面で開き、検索してみる
 
 ## 用意するデータ
@@ -17,7 +17,10 @@
 
 ### 1-1. データを用意する（Omnigent）
 [exercise/prompt_prepare_data.md](exercise/prompt_prepare_data.md) のプロンプトを Omnigent に送ります。
-できたノートブック（`my_work/01_prepare_data`）を Databricks の画面で開き、**すべて実行** します。
+できたノートブック（`my_work/01_prepare_data`）を実行します。実行の仕方は 2 通りあります。
+- **A（おすすめ）: Omnigent に実行してもらう** — Omnigent が「このまま実行しますか？」と聞いてくるので「はい」と答える。
+  終わると、結果の要点と **実行の画面の URL** が返ってくるので、URL を開いてセルの出力を見る
+- **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `my_work/01_prepare_data` を開き、右上で **サーバーレス** を選んで **すべて実行** する
 
 確認すること:
 - **カタログ** で自分のスキーマを開き、`crm_account` テーブルと `research` Volume があること

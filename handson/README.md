@@ -96,7 +96,8 @@ Omnigent と Databricks の画面を行き来しながら、ステップごと�
 | エージェントを読み込んで動かす・評価する・デプロイする | Databricks のノートブック | `02_try_agent`・`03_evaluate`・`04_deploy` |
 | データの準備・ジョブのタスク | Databricks のノートブック | `01_prepare_data`・`task1_extract_characteristics` |
 
-コードは Omnigent に書いてもらいますが、できたノートブックは Databricks の画面で開いて、みんなで中身を見たり、そのまま実行したりします。
+コードは Omnigent に書いてもらい、できたノートブックも **Omnigent に実行してもらう** のが基本です（`handson/tools/run_notebook.sh` を使う）。
+実行の結果は、Omnigent が返す実行の画面の URL を Databricks の画面で開いて、みんなでセルの出力を見ます。自分でノートブックを開いて実行することもできます。
 
 各 Step のフォルダには次の 2 つがあります。
 
@@ -112,6 +113,7 @@ handson/
 ├── requirements.txt          # ノートブックで入れるライブラリ（バージョン固定）
 ├── data/                     # ディープリサーチの結果（架空の 3 社）・過去の受注事例・自社 CRM
 ├── 00_setup/ … 05_job_dashboard/   # 各 Step（exercise/ と solution/）
+├── tools/run_notebook.sh     # ワークスペースのノートブックを実行して、結果を表示する（Omnigent が使う）
 ├── my_work/                  # 参加者が Omnigent と作るコードの置き場所（最初は空）
 └── instructor/               # 講師向け（事前準備・設計メモ・評価データの解説）
 ```

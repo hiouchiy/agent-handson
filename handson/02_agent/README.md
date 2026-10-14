@@ -35,10 +35,13 @@ Step 4 のデプロイでもそのまま使います（Model Serving にも、�
 ### 2-1. エージェントを作る（Omnigent）
 [exercise/prompt_build_agent.md](exercise/prompt_build_agent.md) のプロンプトを、2 回に分けて Omnigent に送ります。
 
-### 2-2. 動かしてトレースを見る（Databricks の画面）
-1. `my_work/02_try_agent` を開いて **すべて実行** する（ライブラリのインストールを含めて 2〜3 分）
+### 2-2. 動かしてトレースを見る（Omnigent・Databricks の画面）
+1. `my_work/02_try_agent` を実行する（ライブラリのインストールを含めて 2〜3 分）。実行の仕方は 2 通りあります。
+   - **A（おすすめ）: Omnigent に実行してもらう** — Omnigent が「このまま実行しますか？」と聞いてくるので「はい」と答える。
+     終わると、結果の要点と **実行の画面の URL** が返ってくるので、URL を開いてセルの出力を見る
+   - **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `my_work/02_try_agent` を開き、右上で **サーバーレス** を選んで **すべて実行** する
 2. 採点の結果（`score_result`）が表示されることを確認する
-3. セルの下に出るトレース、または **エクスペリメント** → `agent_handson_scoring` → **トレース** を開き、次を確かめる
+3. 実行の画面のセルの下に出るトレース、または **エクスペリメント** → `agent_handson_scoring` → **トレース** を開き、次を確かめる
    - `prepare` の中の `search_reference_cases`（AI Search）: どの事例が見つかったか
    - `score_axis` が 6 つ並んで、同時に動いていること
    - 各 `ChatDatabricks` に渡したプロンプトと、LLM の返事

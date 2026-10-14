@@ -8,7 +8,7 @@
 | 2 | 教材を受け取る（Omnigent の作業場所に展開する）。最初の確認で、以降の Bash を確認なしにする | 全員 |
 | 3 | 設定ファイル（`settings.json`）にカタログと SQL ウェアハウスを入れてから、教材をワークスペースに取り込む | 全員 |
 | 4 | Databricks のエージェントスキルを入れて、リロードする | 全員 |
-| 5 | 作業のルールを Omnigent に伝える（作業場所で変えたファイルは、毎回ワークスペースにも反映する） | 全員 |
+| 5 | 作業のルールを Omnigent に伝える（変えたファイルは毎回ワークスペースにも反映する・ノートブックは Omnigent が実行する）。Sandbox が止まるまでの時間を延ばす | 全員 |
 | 6 | 全員で使う AI Search（エンドポイントとインデックス）を作る | **代表者 1 名だけ** |
 
 教材を最初に受け取るので、手順 3 以降は、教材の中のこの README を開いて、プロンプトをコピーしながら進められます。
@@ -181,6 +181,8 @@ databricks aitools list                  # 入ったスキルを確かめる
 
 ## 5. 作業のルールを伝える
 Omnigent に次を送ります（そのまま送れます）。
+このハンズオンでは、Omnigent が作ったノートブックを、**Omnigent にそのまま実行してもらう** のが基本です（自分でワークスペースのノートブックを開いて実行することもできます）。
+Omnigent とやり取りし続けるので、Sandbox が止まりにくくなり、失敗したときも Omnigent がエラーを見て直せます。
 
 ```
 これから Databricks のハンズオンを行います。教材は /home/sandbox-agent/workspace の下の、
@@ -202,8 +204,21 @@ handson/README.md と各 Step の README.md を読み、全体の流れを把握
   反映先は /Workspace/Users/<user_email>/<materials_folder>/handson/ の下の同じパス（settings.json の participant の値）。
   例: databricks workspace import-dir handson/my_work /Workspace/Users/<user_email>/<materials_folder>/handson/my_work --overwrite
   （先頭が "# Databricks notebook source" の .py はノートブックとして、それ以外の .py はファイルとして取り込まれます）
+- ノートブックを作ったり直したりしたら、ワークスペースに反映したうえで、「このまま実行しますか？」と私に聞いてください。
+  「はい」と答えたら、handson/tools/run_notebook.sh でワークスペースのノートブックを実行し、終わるまで待ってください
+  （例: bash handson/tools/run_notebook.sh /Workspace/Users/<user_email>/<materials_folder>/handson/my_work/01_prepare_data）。
+  終わったら、結果の要点と実行の画面の URL を教えてください。失敗したら、原因を調べて直し、もう一度聞いてください。
 読み込みが終わったら、全体の流れを 5 行で要約してください。
 あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
+```
+
+### Sandbox が止まるまでの時間を延ばす
+Sandbox は、操作がないまま **10 分** たつと自動で止まります（止まっても作業場所のファイルは残り、次に操作すると再開します）。
+ハンズオンの途中で止まらないよう、止まるまでの時間を延ばしておきます。次を Omnigent に送ります。
+
+```
+databricks sandbox list でこの Sandbox の名前を調べ、databricks sandbox config <名前> --idle-timeout 4h で、
+止まるまでの時間を 4 時間にしてください。できなかったら、エラーの内容を教えてください（その場合はこの設定は飛ばします）。
 ```
 
 ## 6. 全員で使う AI Search を作る（代表者 1 名だけ）
@@ -212,7 +227,7 @@ handson/README.md と各 Step の README.md を読み、全体の流れを把握
 | やり方 | 手順 |
 |---|---|
 | **基本: プロンプト** | [shared/prompt_shared_setup.md](shared/prompt_shared_setup.md) のプロンプトを、代表者の Omnigent に送る |
-| うまくいかないとき: ノートブック | [shared/00_shared_setup](shared/00_shared_setup.py) を開いて **すべて実行** する（同じものができる） |
+| うまくいかないとき: ノートブック | [shared/00_shared_setup](shared/00_shared_setup.py) を実行する（同じものができる）。Omnigent に「handson/tools/run_notebook.sh で 00_setup/shared/00_shared_setup を実行して」と頼むか、ワークスペースで開いて **すべて実行** する |
 
 インデックスがオンラインになるまで 10 分ほどかかります。できたら代表者は、参加者全員に「できた」と伝えます。
 確かめ方: **カタログ** → `agent_handson_shared` → `reference_case_index` を開き、**検索** で「病院 電子カルテ 人手不足」と入れて RC03 が一番上に来ること。
