@@ -154,15 +154,17 @@ print(json.dumps(results.metrics, ensure_ascii=False, indent=2))
 # MAGIC %md
 # MAGIC ## 結果を見る
 # MAGIC エクスペリメント → **評価** タブ → いま作られた評価の実行を開くと、評価データごとに OK / NG と理由が見られます。
-# MAGIC 下の表は同じ内容を 1 行 1 評価データで表示したものです。
+# MAGIC 下の表は同じ内容を、評価データ（会社ID）× スコアラーの OK / NG で表示したものです。
 
 # COMMAND ----------
 
-summary = []
-for t in mlflow.search_traces(run_id=results.run_id, return_type="list"):
-    row = {"trace_id": t.info.trace_id}
-    for a in t.info.assessments:
-        if a.feedback is not None:
-            row[a.name] = a.feedback.value
-    summary.append(row)
-display(spark.createDataFrame([{k: str(v) for k, v in r.items()} for r in summary]))
+import pandas as pd
+
+# result_df は 1 行 1 評価データ。request 列は predict_fn に渡した inputs（dict）、
+# スコアラーの結果は「<スコアラー名>/value」列に入る（スコアラーが結果を返さなかったときは列がない）
+df = results.result_df
+table = pd.DataFrame({"company_id": df["request"].map(lambda r: r.get("company_id") if isinstance(r, dict) else None)})
+for s in SCORERS:
+    col = f"{s.name}/value"
+    table[s.name] = df[col].map(lambda v: "OK" if v == True else "NG" if v == False else str(v)) if col in df else "（結果なし）"  # noqa: E712
+display(table.sort_values("company_id").reset_index(drop=True))

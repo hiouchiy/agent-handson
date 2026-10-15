@@ -21,6 +21,7 @@ MLflow で、エージェントのオフライン評価をするノートブッ�
 - 名前（スキーマ・エクスペリメントなど）は %run ../_config で読み込んだ変数を使う。エクスペリメントは Step 2 のものを使う
 - 評価データセットは、前の内容が混ざらないよう、すでにあれば消してから作り直す
 - スコアラーの理由（rationale）には、実際の値と期待値を書く
+- 結果の表は、模範解答（handson/03_evaluation/solution/03_evaluate.py）と同じく results.result_df から作る（トレースを読み直さない）
 
 ## 気をつけること
 - meets_expected_points は MLflow 組み込みの ExpectationsGuidelines を使い、期待値の expected_points を guidelines として渡す。
