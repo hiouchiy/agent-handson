@@ -17,12 +17,17 @@ START → prepare ─(Send ×6)─▶ score_axis ─▶ collect ─┬─▶ sum
 
 | ファイル | 形 | 内容 |
 |---|---|---|
-| `rubric.py` | Python ファイル | 採点基準（観点ごとの段階と点数範囲、プロンプト、合計・Tier の計算）。**業務の決めごと** |
+| `rubric.py` | Python ファイル | 採点基準（観点ごとの段階と点数範囲、プロンプト、合計・Tier の計算）。**業務の決めごと**。業務の人が読む表は [rubric.md](rubric.md) |
 | `memory.py` | Python ファイル | Managed Agent Memory の読み書き（Model Serving では呼び出したユーザー本人の資格情報で読む） |
 | `agent.py` | Python ファイル | LangGraph のグラフと、MLflow の ResponsesAgent（Model Serving の入出力） |
 | `02_try_agent` | ノートブック | `agent.py` を読み込んで 1 社を採点し、トレースを見る（用意したもの `solution/02_try_agent` を使う） |
 
 このうち Omnigent に作ってもらうのは `agent.py` だけです。`rubric.py` と `memory.py` は `solution/` から `my_work/` にコピーし、`02_try_agent` は `solution/` のものをそのまま使います。
+
+> **採点基準について**: 採点基準は本来、業務部門の持ち物で、Excel や Word などのドキュメントで作って直すものです。
+> 本番では、そのドキュメントを Unity Catalog の Volume などに置き、エージェントが読み込んでプロンプトを組み立てます。
+> このハンズオンでは時間の都合で、その中身を書き写した `rubric.py` を使います。業務の人が読む形の表は [rubric.md](rubric.md) です
+> （`rubric.py` から `tools/make_rubric_doc.py` で作ったもの）。
 
 エージェント本体は Python ファイルにして、ノートブックから `import` して使います。同じファイルを、Step 3 の評価と
 Step 4 のデプロイでもそのまま使います（Model Serving にも、このファイルがそのまま載ります）。
