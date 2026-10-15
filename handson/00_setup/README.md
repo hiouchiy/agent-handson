@@ -212,7 +212,9 @@ handson/README.md と、各 Step の README.md を読んでください。
 ## 作業のルール（ハンズオンの最後まで守ってください）
 1. 設定値: 環境や私によって変わる値（ワークスペース・カタログ・スキーマ・メールアドレス・エンドポイント名など）は、
    プロンプトに書いていなくても、handson/settings.json と handson/_config.py の決め方から求める
-2. 置き場所: 私が作ってほしいコードは handson/my_work/ に置く
+2. 置き場所: 私が作ってほしいコードは handson/my_work/ に置く。用意してあるノートブック（各 Step の solution/）は、
+   使うように言われたら書き直さずにそのまま使い、実行するときは handson/tools/run_notebook.sh に、ワークスペースの solution/ の
+   ノートブックのパスと、必要ならウィジェットの値（例: '{"agent_dir": "../../my_work"}'）を渡す
 3. ファイルの形:
    - エージェント本体（LangGraph のグラフ・採点基準・Memory の読み書き）は、普通の Python ファイル（.py）にする
      （先頭に "# Databricks notebook source" を付けない。ほかのファイルから import するため）
@@ -223,7 +225,7 @@ handson/README.md と、各 Step の README.md を読んでください。
    （例: databricks workspace import-dir handson/my_work <反映先>/my_work --overwrite）
 5. ノートブックの実行: ノートブックを作ったり直したりしたら、「このまま実行しますか？」と私に聞く。
    「はい」なら handson/tools/run_notebook.sh でワークスペースのノートブックを実行し、終わるまで待つ
-   （例: bash handson/tools/run_notebook.sh /Workspace/Users/<user_email>/<materials_folder>/handson/my_work/01_prepare_data）。
+   （例: bash handson/tools/run_notebook.sh /Workspace/Users/<user_email>/<materials_folder>/handson/02_agent/solution/02_try_agent '{"agent_dir": "../../my_work"}'）。
    終わったら、結果の要点と実行の画面の URL を教える。失敗したら、原因を調べて直し、もう一度聞く
 6. コードの書き方: ノートブックの実行には数分かかるので、つまらないバグで落ちないよう、実行してよいか聞く前に次を済ませる
    - 各 Step の solution/ に同じことをする模範解答があるので、その構成と API の使い方に合わせる。
@@ -233,6 +235,7 @@ handson/README.md と、各 Step の README.md を読んでください。
    - None や空になりうる戻り値は、確かめてから使う
    - python3 -m py_compile で、構文の誤りがないことを確かめる
    - 失敗して直したときは、同じ種類のバグがほかの場所にないかも見直してから、もう一度聞く
+7. 見切り: 自分が書いたコードが 1 回直しても動かないときは、それ以上直さずに私に知らせる（模範解答に切り替えて先に進む）
 
 ## できたら
 全体の流れを 5 行で要約してください。あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。

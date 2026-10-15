@@ -1,38 +1,24 @@
 # Omnigent に送るプロンプト（Step 3 オフライン評価）
 
-## 評価のノートブックを作る
+## 評価のノートブックを動かす
 
-**このプロンプトで頼んでいること**: 評価データを登録し、4 つのスコアラーでエージェントを評価するノートブックを作ってもらう。
+**このプロンプトで頼んでいること**: 用意してある評価のノートブック（`solution/03_evaluate`）の中身を説明してもらい、Step 2 で作ったエージェントでそのまま実行してもらう。
+評価のしくみ（データセットの登録・スコアラー・結果の表）は誰が書いても同じになるので、用意したものを使います。
 
 ```
 ## やりたいこと
-MLflow で、エージェントのオフライン評価をするノートブックを作ってください。
+Step 3 の評価は、用意してあるノートブック handson/03_evaluation/solution/03_evaluate.py を、書き直さずにそのまま使います。
 
-## 作るもの
-- ファイル: handson/my_work/03_evaluate.py（ノートブック）
-- 中身:
-  1. handson/03_evaluation/eval_dataset.json を、Unity Catalog の評価データセット scoring_eval_dataset として登録する
-  2. README の「スコアラー」の 4 つのスコアラーを用意する
-  3. my_work の agent.py を直接呼んで評価する（デプロイはまだしない）
-  4. スコアラーごとの結果を表示する
+1. このノートブックの評価データ（handson/03_evaluation/eval_dataset.json）と、4 つのスコアラーが何を確かめるかを、表にして説明してください
+2. 説明が終わったら、ワークスペースの
+   /Workspace/Users/<user_email>/<materials_folder>/handson/03_evaluation/solution/03_evaluate を、
+   ウィジェット agent_dir=../../my_work（Step 2 で作ったエージェント）で実行してよいか聞いてください
+   （bash handson/tools/run_notebook.sh <ノートブック> '{"agent_dir": "../../my_work"}'）
 
 ## 決まりごと
-- エージェント本体（agent.py などの Python ファイル）は変えずに import して使う
-- 名前（スキーマ・エクスペリメントなど）は %run ../_config で読み込んだ変数を使う。エクスペリメントは Step 2 のものを使う
-- 評価データセットは、前の内容が混ざらないよう、すでにあれば消してから作り直す
-- スコアラーの理由（rationale）には、実際の値と期待値を書く
-- 結果の表は、模範解答（handson/03_evaluation/solution/03_evaluate.py）と同じく results.result_df から作る（トレースを読み直さない）
-
-## 気をつけること
-- meets_expected_points は MLflow 組み込みの ExpectationsGuidelines を使い、期待値の expected_points を guidelines として渡す。
-  ジャッジには、出力を {"score_result": ...} の JSON の文字列にして渡す（dict のままだと中の項目を読めないことがある）
-
-## 参考にするもの
-- 評価データとスコアラー: handson/03_evaluation/README.md の「評価データ」「スコアラー」
-- MLflow の評価の書き方: Databricks のスキル（databricks-mlflow-evaluation）
+- ノートブックは書き直さない。失敗したときは、原因を調べて教えてください（直す前に私に聞く）
 
 ## できたら
-ワークスペースに反映して、実行してよいか聞いてください。
 完了の条件: 評価が最後まで動き、評価データごとに、どのスコアラーが OK／NG かが表示されること（最初は NG が出ます）。
 ```
 
@@ -51,8 +37,11 @@ MLflow で、エージェントのオフライン評価をするノートブッ�
 <例: 採点基準の〇〇を△△に変える>
 
 ## 決まりごと
+- 直すのは handson/my_work/ のファイル（rubric.py など）か、Memory だけ。評価のノートブックは書き直さない
 - 採点基準（rubric.py）を変えた場合は RUBRIC_VERSION を 1 つ上げる
+- Memory に記憶を足すときは、用意してあるノートブック handson/03_evaluation/solution/03_add_memory.py を使う
 
 ## できたら
-どのファイルのどこを変えたかを教えてから、ワークスペースに反映して、評価をもう一度実行してよいか聞いてください。
+どのファイルのどこを変えたかを教えてから、ワークスペースに反映して、評価（solution/03_evaluate を agent_dir=../../my_work で）を
+もう一度実行してよいか聞いてください。
 ```

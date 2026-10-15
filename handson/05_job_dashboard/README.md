@@ -24,18 +24,18 @@
 
 ## 演習
 
-### 5-1. ジョブのタスクを作る（Omnigent）
-[exercise/prompt_job.md](exercise/prompt_job.md) のプロンプトを Omnigent に送り、3 つのタスクのノートブックを作ってもらいます。
-Omnigent が「このまま実行しますか？」と聞いてきたら、「5-2 でジョブとして実行するので、今は実行しない」と答えます。
+### 5-1. ジョブのタスクを知る（Omnigent）
+3 つのタスクのノートブックは、用意してあるもの（`05_job_dashboard/solution/` の task1〜3）をそのまま使います。
+[exercise/prompt_job.md](exercise/prompt_job.md) のプロンプトを Omnigent に送り、それぞれが何をするかを説明してもらいます。
 
 ### 5-2. ジョブを作って動かす
 ジョブの中身は次のとおりです（計算資源はサーバーレス、種類はノートブック）。
 
 | タスク名 | ノートブック | 依存するタスク |
 |---|---|---|
-| `extract_characteristics` | `my_work/task1_extract_characteristics` | — |
-| `score` | `my_work/task2_score` | `extract_characteristics` |
-| `write_results` | `my_work/task3_write_results` | `score` |
+| `extract_characteristics` | `05_job_dashboard/solution/task1_extract_characteristics` | — |
+| `score` | `05_job_dashboard/solution/task2_score` | `extract_characteristics` |
+| `write_results` | `05_job_dashboard/solution/task3_write_results` | `score` |
 
 スケジュールは毎朝 6 時（日本時間）で、**一時停止** にしておきます。作り方は 2 通りあります。
 
@@ -43,11 +43,11 @@ Omnigent が「このまま実行しますか？」と聞いてきたら、「5-
 
 ```
 ## やりたいこと
-my_work の 3 つのタスクのノートブックで、定期実行するジョブを作って、1 回実行してください。
+handson/05_job_dashboard/solution/ の 3 つのタスクのノートブックで、定期実行するジョブを作って、1 回実行してください。
 
 ## 作るもの
 - handson/05_job_dashboard/README.md の 5-2 の表のとおりの、3 つのタスクのジョブ
-  （ノートブックはワークスペースの my_work の下のもの、計算資源はサーバーレス）
+  （ノートブックはワークスペースの handson/05_job_dashboard/solution/ の下のもの、計算資源はサーバーレス）
 - スケジュール: 毎朝 6 時（日本時間）。作ったときは一時停止にしておく
 
 ## できたら
@@ -76,7 +76,6 @@ my_work の 3 つのタスクのノートブックで、定期実行するジョ
 4. **公開** する
 
 ## うまくいかないとき
-- タスク: [solution/](solution/) の `task1_extract_characteristics`・`task2_score`・`task3_write_results`
 - ジョブ: [solution/05_create_job](solution/05_create_job.py) を実行すると、同じジョブを作って実行します
 - ダッシュボード: [solution/scoring.lvdash.json](solution/scoring.lvdash.json) を **ダッシュボード** → **作成** の横の **インポート** から読み込みます
   （読み込んだ後、データのカタログとスキーマを自分のものにします）

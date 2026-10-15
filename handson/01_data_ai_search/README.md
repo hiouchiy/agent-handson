@@ -16,11 +16,11 @@
 ## 演習
 
 ### 1-1. データを用意する（Omnigent）
-[exercise/prompt_prepare_data.md](exercise/prompt_prepare_data.md) のプロンプトを Omnigent に送ります。
-できたノートブック（`my_work/01_prepare_data`）を実行します。実行の仕方は 2 通りあります。
+データの準備は誰が書いても同じになるので、用意してあるノートブック（`01_data_ai_search/solution/01_prepare_data`）をそのまま使います。
+[exercise/prompt_prepare_data.md](exercise/prompt_prepare_data.md) のプロンプトを Omnigent に送り、中身を説明してもらってから実行します。実行の仕方は 2 通りあります。
 - **A（おすすめ）: Omnigent に実行してもらう** — Omnigent が「このまま実行しますか？」と聞いてくるので「はい」と答える。
   終わると、結果の要点と **実行の画面の URL** が返ってくるので、URL を開いてセルの出力を見る
-- **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `my_work/01_prepare_data` を開き、右上で **サーバーレス** を選んで **すべて実行** する
+- **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `01_data_ai_search/solution/01_prepare_data` を開き、右上で **サーバーレス** を選んで **すべて実行** する
 
 確認すること:
 - **カタログ** で自分のスキーマを開き、`crm_account` テーブルと `research` Volume があること
@@ -47,6 +47,5 @@
 エージェントは Step 2 で、企業特性の業種・要約・きっかけから検索語を作り、同じように事例を探します。
 
 ## うまくいかないとき
-- 1-1: 模範解答 [solution/01_prepare_data](solution/01_prepare_data.py) をそのまま実行します。
 - 1-1 で Memory（`agent_memory`）を作れないとき: ワークスペースのプレビュー **Managed Memory for Agents** が有効になっていない可能性があります。講師に確かめてもらいます。
 - 1-2・1-3: 共有のインデックスが見つからない・検索できないときは、事前準備（または Step 0 の手順 6 の予備の手順）が終わっているか、権限が付いているかを確かめてもらいます。

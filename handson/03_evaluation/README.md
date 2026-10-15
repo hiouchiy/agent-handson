@@ -30,12 +30,14 @@
 
 ## 演習
 
-### 3-1. 評価のノートブックを作って実行する（Omnigent・Databricks の画面）
-1. [exercise/prompt_evaluate.md](exercise/prompt_evaluate.md) のプロンプトを Omnigent に送る
-2. できた `my_work/03_evaluate` を実行する。実行の仕方は 2 通りあります。
+### 3-1. 評価のノートブックを動かす（Omnigent・Databricks の画面）
+評価のしくみ（データセットの登録・スコアラー・結果の表）は誰が書いても同じになるので、用意してあるノートブック（`03_evaluation/solution/03_evaluate`）をそのまま使います。
+このステップで大事なのは、評価の結果を読み、NG の原因を調べて直すところです（3-2・3-3）。
+1. [exercise/prompt_evaluate.md](exercise/prompt_evaluate.md) のプロンプトを Omnigent に送り、評価データとスコアラーを説明してもらう
+2. `03_evaluation/solution/03_evaluate` を、ウィジェット `agent_dir` を `../../my_work` にして実行する。実行の仕方は 2 通りあります。
    - **A（おすすめ）: Omnigent に実行してもらう** — Omnigent が「このまま実行しますか？」と聞いてくるので「はい」と答える。
      終わると、結果の要点と **実行の画面の URL** が返ってくるので、URL を開いてセルの出力を見る
-   - **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `my_work/03_evaluate` を開き、右上で **サーバーレス** を選んで **すべて実行** する
+   - **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `03_evaluation/solution/03_evaluate` を開き、ウィジェット `agent_dir` に `../../my_work` を入れて、右上で **サーバーレス** を選んで **すべて実行** する
 3. **エクスペリメント** → `agent_handson_scoring` → **評価** タブで、いま作られた評価を開く
 4. 評価データごとに、どのスコアラーが NG かを見る。NG の行を開くと、スコアラーの理由とトレースが見られる
 
@@ -59,9 +61,8 @@
 | プロンプト（`rubric.py` の `SUMMARY_PROMPT` など） | 出力の文章に、書いてほしいことが書かれていないとき |
 
 採点基準を変えたら `RUBRIC_VERSION` を上げます（評価の結果を版ごとに比べるため）。
-直したら `my_work/03_evaluate` をもう一度実行し（Omnigent に「もう一度評価を実行して」と頼めば、直したファイルを反映して実行します）、**全件 OK** になることを確かめます。
+直したら `solution/03_evaluate`（`agent_dir` は `../../my_work`）をもう一度実行し（Omnigent に「もう一度評価を実行して」と頼めば、直したファイルを反映して実行します）、**全件 OK** になることを確かめます。
 エクスペリメントの **評価** タブで、直す前と後の評価を並べて比べてみます。
 
 ## うまくいかないとき
-- 評価: [solution/03_evaluate](solution/03_evaluate.py)（ウィジェット `agent_dir` を `../../my_work` にすると自分のエージェントを評価できる）
 - 直し方の模範解答: [solution/03_add_memory](solution/03_add_memory.py)（Memory）と [solution/fixed/](solution/fixed/)（直した後のエージェント）

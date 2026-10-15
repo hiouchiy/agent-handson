@@ -1,7 +1,7 @@
 # Step 2 LangGraph でエージェントを作り、トレースを見る（40 分）
 
 ## このステップでやること
-1. Omnigent に、スコアリングエージェントを **ゼロから** 作ってもらう（バイブコーディング）
+1. Omnigent に、スコアリングエージェントの本体（`agent.py`）を作ってもらう（バイブコーディング）。採点基準・Memory の読み書き・動作確認のノートブックは用意したものを使う
 2. ノートブックで 1 社を採点し、MLflow のトレースで処理の中身を見る
 3. トレースを Unity Catalog の Delta テーブルに同期し、SQL で確かめる
 
@@ -20,7 +20,9 @@ START → prepare ─(Send ×6)─▶ score_axis ─▶ collect ─┬─▶ sum
 | `rubric.py` | Python ファイル | 採点基準（観点ごとの段階と点数範囲、プロンプト、合計・Tier の計算）。**業務の決めごと** |
 | `memory.py` | Python ファイル | Managed Agent Memory の読み書き（Model Serving では呼び出したユーザー本人の資格情報で読む） |
 | `agent.py` | Python ファイル | LangGraph のグラフと、MLflow の ResponsesAgent（Model Serving の入出力） |
-| `02_try_agent` | ノートブック | `agent.py` を読み込んで 1 社を採点し、トレースを見る |
+| `02_try_agent` | ノートブック | `agent.py` を読み込んで 1 社を採点し、トレースを見る（用意したもの `solution/02_try_agent` を使う） |
+
+このうち Omnigent に作ってもらうのは `agent.py` だけです。`rubric.py` と `memory.py` は `solution/` から `my_work/` にコピーし、`02_try_agent` は `solution/` のものをそのまま使います。
 
 エージェント本体は Python ファイルにして、ノートブックから `import` して使います。同じファイルを、Step 3 の評価と
 Step 4 のデプロイでもそのまま使います（Model Serving にも、このファイルがそのまま載ります）。
@@ -36,10 +38,11 @@ Step 4 のデプロイでもそのまま使います（Model Serving にも、�
 [exercise/prompt_build_agent.md](exercise/prompt_build_agent.md) のプロンプトを、2 回に分けて Omnigent に送ります。
 
 ### 2-2. 動かしてトレースを見る（Omnigent・Databricks の画面）
-1. `my_work/02_try_agent` を実行する（ライブラリのインストールを含めて 2〜3 分）。実行の仕方は 2 通りあります。
+1. 用意してあるノートブック `02_agent/solution/02_try_agent` を、ウィジェット `agent_dir` を `../../my_work` にして実行する
+   （`my_work` の `agent.py` を読み込みます。ライブラリのインストールを含めて 2〜3 分）。実行の仕方は 2 通りあります。
    - **A（おすすめ）: Omnigent に実行してもらう** — Omnigent が「このまま実行しますか？」と聞いてくるので「はい」と答える。
      終わると、結果の要点と **実行の画面の URL** が返ってくるので、URL を開いてセルの出力を見る
-   - **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `my_work/02_try_agent` を開き、右上で **サーバーレス** を選んで **すべて実行** する
+   - **B: 自分で実行する** — ワークスペースの自分の handson フォルダの `02_agent/solution/02_try_agent` を開き、ウィジェット `agent_dir` に `../../my_work` を入れて、右上で **サーバーレス** を選んで **すべて実行** する
 2. 採点の結果（`score_result`）が表示されることを確認する
 3. 実行の画面のセルの下に出るトレース、または **エクスペリメント** → `agent_handson_scoring` → **トレース** を開き、次を確かめる
    - `prepare` の中の `search_reference_cases`（AI Search）: どの事例が見つかったか
@@ -59,5 +62,5 @@ Step 4 のデプロイでもそのまま使います（Model Serving にも、�
 - `SQL warehouse ID is required for accessing traces in UC tables` と出る: 以前に、トレースの保存先を Unity Catalog にした
   同じ名前のエクスペリメント（`agent_handson_scoring`）が残っています。**エクスペリメント** の画面で、そのエクスペリメントの名前を
   変えて（例: `agent_handson_scoring_old`）から、もう一度実行します。
-- それでも動かないとき: 模範解答 [solution/](solution/) の `agent.py`・`memory.py`・`rubric.py` を `my_work/` にコピーするか、
+- Omnigent が 1 回直しても動かないとき: それ以上は直さず、模範解答 [solution/](solution/) の `agent.py` を `my_work/` にコピーして先に進むか、
   [solution/02_try_agent](solution/02_try_agent.py) をそのまま実行します（ウィジェット `agent_dir` が模範解答のフォルダを指しています）。

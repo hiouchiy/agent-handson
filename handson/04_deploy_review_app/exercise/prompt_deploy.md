@@ -1,42 +1,24 @@
 # Omnigent に送るプロンプト（Step 4 デプロイ）
 
-**このプロンプトで頼んでいること**: Step 3 で直したエージェントを、Model Serving にデプロイするノートブックを作ってもらう。
+**このプロンプトで頼んでいること**: 用意してあるデプロイのノートブック（`solution/04_deploy`）の中身を説明してもらい、Step 3 で直したエージェントでそのまま実行してもらう。
+デプロイのコードは、エージェントの中身にかかわらず誰が書いても同じになるので、用意したものを使います。
 
 ```
 ## やりたいこと
-my_work のエージェントを、Model Serving にデプロイするノートブックを作ってください。
+Step 4 のデプロイは、用意してあるノートブック handson/04_deploy_review_app/solution/04_deploy.py を、書き直さずにそのまま使います。
 
-## 作るもの
-- ファイル: handson/my_work/04_deploy.py（ノートブック）
-- 中身:
-  1. エージェントを MLflow に記録する（model-from-code。agent.py が本体、rubric.py と memory.py も一緒に入れる）
-  2. Unity Catalog に登録する
-  3. databricks.agents.deploy で Model Serving にデプロイし、エンドポイント名と Review App の URL を表示する
-  4. エンドポイントの準備ができるまで待つ
-  5. 評価データの 1 件目をエンドポイントに送り、score・tier・next_action を表示する
-  6. 最後のセルで、TRACE_TABLE の新しい順に 10 件（評価・フィードバックの一覧も）を表示する。
-     セルの中で同期を待たない（同期は 15 分ごと。まだ入っていなければ、私があとでこのセルだけ実行し直す）
+1. このノートブックが何をするかを、セルごとに 1 行ずつ、表にして説明してください
+   （特に、認証の考え方: 基盤モデル・AI Search はエンドポイントの資格情報、Memory は呼び出したユーザーの代理（OBO）、
+    トレースはエクスペリメントに送って Delta テーブルに同期する、の 3 つ）
+2. 説明が終わったら、ワークスペースの
+   /Workspace/Users/<user_email>/<materials_folder>/handson/04_deploy_review_app/solution/04_deploy を、
+   ウィジェット agent_dir=../../my_work（Step 3 で直したエージェント）で実行してよいか聞いてください
+   （bash handson/tools/run_notebook.sh <ノートブック> '{"agent_dir": "../../my_work"}'。デプロイの完了まで 20〜25 分かかります）
 
 ## 決まりごと
-- エージェント本体（agent.py・rubric.py・memory.py）は変えない
-- 名前（モデル・エンドポイント・エクスペリメントなど）は %run ../_config で読み込んだ変数を使う。
-  エクスペリメントは Step 2 のもの（デプロイ後のトレースも同じ場所に入れる）
-- 依存は handson/requirements.txt と同じバージョンに固定する（databricks-agents は除く）
-- 使うリソース（LLM・埋め込みモデル・AI Search のインデックス）は、システムの認証で宣言する。
-  Memory は呼び出したユーザーとして読むので、ユーザーの認証（スコープ unity-catalog）も付ける
-
-## 気をつけること
-- 個人用アクセストークンなどの資格情報は、エンドポイントに渡さない。デプロイ後のトレースはエクスペリメントに入り、
-  Step 2 で有効にした同期で Delta テーブル（_config.py の TRACE_TABLE）に入る
-- デプロイの前に、エクスペリメントの保存先が Unity Catalog になっていないことを確かめ、なっていたら止める（模範解答と同じ）
-- 記録するときに agent.py を読み込むので、my_work を sys.path に入れておく
-- agents.deploy は古いバージョンを流量 0% で残すので、準備ができたら今回のバージョン以外を外す
-
-## 参考にするもの
-- 同じことをするノートブック: handson/04_deploy_review_app/solution/04_deploy.py
-- デプロイの書き方: Databricks のスキル（databricks-model-serving）
+- ノートブックは書き直さない。失敗したときは、原因を調べて教えてください（直す前に私に聞く）
 
 ## できたら
-ワークスペースに反映して、実行してよいか聞いてください（デプロイの完了まで 20〜25 分かかります）。
 完了の条件: エンドポイントから採点結果が返ってきて、Review App の URL が表示されること。
+最後のセルの、トレースの同期の表は、15 分ほどあとに私が自分でもう一度実行します（いまは空でもかまいません）。
 ```
