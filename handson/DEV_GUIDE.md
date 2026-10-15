@@ -21,6 +21,7 @@
 | 今日の日付で判断する | `memory.today()`（日本時間）を各観点の入力に入れる | |
 | 会社の特徴が入っていない質問には使い方を返す | エラーにせず、エージェントの説明と入力の例を返す（`score_result` は None） | |
 | 期待どおりに動いているかを評価する | `mlflow.genai.evaluate`。形のチェックはコードのスコアラー、文章の中身は `ExpectationsGuidelines`（出力は JSON の文字列にして渡す） | `03_evaluation/solution/03_evaluate.py` |
+| 文章から決まった形の情報を取り出す（ジョブのタスク） | `ai_query` に `responseFormat`（JSON Schema・strict）を付ける。`failOnError` は付けない（戻り値のフィールド名がスキルやドキュメントの説明と違うことがある）。出力は `try_parse_json` で確かめ、読めない行は別のテーブルに分ける | `05_job_dashboard/solution/task1_extract_characteristics.py` |
 | 処理の記録を残して見る | MLflow のトレース。エクスペリメントに集め、Delta テーブル（`TRACE_TABLE`）に同期する | `02_agent/solution/02_try_agent.py` |
 | API として公開する・人の感想を集める | `databricks.agents.deploy`（Model Serving と Review App）。資格情報（個人用アクセストークンなど）は渡さない | `04_deploy_review_app/solution/04_deploy.py` |
 
