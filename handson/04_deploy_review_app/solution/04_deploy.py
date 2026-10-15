@@ -40,7 +40,12 @@ sys.path.insert(0, AGENT_DIR)  # 記録するときに agent.py を読み込む�
 AGENT_ENV = {"HANDSON_CATALOG": CATALOG, "HANDSON_SCHEMA": SCHEMA, "HANDSON_CASE_INDEX": CASE_INDEX, "HANDSON_LLM_ENDPOINT": LLM_ENDPOINT}
 os.environ.update(AGENT_ENV)
 mlflow.set_registry_uri("databricks-uc")
-mlflow.set_experiment(EXPERIMENT_PATH)  # デプロイ後のトレースも、このエクスペリメントに入る
+experiment = mlflow.set_experiment(EXPERIMENT_PATH)  # デプロイ後のトレースも、このエクスペリメントに入る
+# 以前の版の教材で、トレースの保存先を Unity Catalog にしたエクスペリメントのままだと、エンドポイントはトレースを書けない
+if getattr(experiment, "trace_location", None):
+    raise RuntimeError(f"エクスペリメント {EXPERIMENT_PATH} は、トレースの保存先が Unity Catalog になっています。"
+                       "エクスペリメントの画面で名前を変えて（例: agent_handson_scoring_old）から、Step 2 の 02_try_agent を"
+                       "実行し直し、そのあとでこのノートブックを実行してください")
 
 # COMMAND ----------
 
@@ -148,7 +153,8 @@ print(sr["company_id"], sr["score"], sr["tier"], sr["next_action"])
 # MAGIC    （Review App から呼ぶときは会社IDを `custom_inputs` で渡せないので、エージェントは本文の `company_id` を使う）
 # MAGIC 3. 回答に 👍／👎 を付け、理由をコメントに書く（例: 「次のアクションに競合の契約時期が入っていない」）
 # MAGIC 4. エクスペリメント → **トレース** で、付けたフィードバックが評価（assessment）としてトレースに残っていることを確認する
-# MAGIC 5. 15 分ほど待ってから次のセルを実行し、デプロイ後のトレースとフィードバックが Delta テーブルにも同期されたことを確かめる
+# MAGIC 5. 15 分ほどあとに次のセルだけを実行し直し、デプロイ後のトレースとフィードバックが Delta テーブルにも同期されたことを確かめる
+# MAGIC    （同期は 15 分ごとなので、デプロイの直後に実行したときは、まだ入っていないことがあります。このセルの中では待ちません）
 
 # COMMAND ----------
 
