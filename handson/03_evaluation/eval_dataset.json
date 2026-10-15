@@ -1,7 +1,7 @@
 [
   {
     "company_id": "E001",
-    "characteristics_json": "{\"company_id\": \"E001\", \"company_name\": \"東和電力ネットワーク株式会社\", \"industry\": \"電力（送配電）\", \"is_critical_infra\": true, \"regulated\": true, \"legacy_scale\": \"高\", \"security_staffing\": \"逼迫\", \"size_class\": \"大\", \"public_exposure\": \"中\", \"recent_trigger\": \"2026年5月、送配電管理システムへの不正アクセスで一部データが閲覧された可能性を公表し、経済産業省へ報告\", \"existing_relationship\": \"既存取引あり（法人携帯）。競合 A 社の脆弱性管理サービス（MSS）を主要システムに導入済み。\", \"key_facts\": [\"従業員 約21,000人、売上 約2.8兆円\", \"送配電の制御系には 20 年以上運用しているシステムが多い\", \"顧客向けの Web サービスと遠隔監視の接続口をインターネットに公開している\", \"セキュリティ担当は 10 名ほどで、採用が追いついていない\", \"2026年5月に不正アクセスを公表し、当局へ報告\"], \"summary\": \"重要インフラ×古いシステム×直近のインシデント。競合の MSS が入っている。\"}",
+    "characteristics_json": "{\"company_id\": \"E001\", \"company_name\": \"東和電力ネットワーク株式会社\", \"industry\": \"電力（送配電）\", \"is_critical_infra\": true, \"regulated\": true, \"legacy_scale\": \"高\", \"security_staffing\": \"逼迫\", \"size_class\": \"大\", \"public_exposure\": \"中\", \"recent_trigger\": \"2026年5月、送配電管理システムへの不正アクセスで一部データが閲覧された可能性を公表し、経済産業省へ報告\", \"existing_relationship\": \"既存取引あり（業務用 PC の保守）。競合 A 社の脆弱性管理サービス（MSS）を主要システムに導入済み。\", \"key_facts\": [\"従業員 約21,000人、売上 約2.8兆円\", \"送配電の制御系には 20 年以上運用しているシステムが多い\", \"顧客向けの Web サービスと遠隔監視の接続口をインターネットに公開している\", \"セキュリティ担当は 10 名ほどで、採用が追いついていない\", \"2026年5月に不正アクセスを公表し、当局へ報告\"], \"summary\": \"重要インフラ×古いシステム×直近のインシデント。競合の MSS が入っている。\"}",
     "expectations": {
       "expected_tier": "A",
       "expected_points": [

@@ -1,11 +1,11 @@
 [
-  {"company_id": "C001", "company_name": "株式会社ホクト住まいホールディングス", "existing_customer": true,
-   "current_products": "法人携帯（約3,000回線）", "open_opportunity": "なし",
+  {"company_id": "C001", "company_name": "株式会社みなと生活ストアーズ", "existing_customer": true,
+   "current_products": "店舗の業務用 PC の保守（約3,000台）", "open_opportunity": "なし",
    "incumbent_security_vendor": "なし（セキュリティ領域は未提案）", "account_owner": "営業1部 田中"},
-  {"company_id": "C002", "company_name": "ミライネクストグループ株式会社", "existing_customer": false,
+  {"company_id": "C002", "company_name": "あおば交通ホールディングス株式会社", "existing_customer": false,
    "current_products": "なし", "open_opportunity": "なし",
    "incumbent_security_vendor": "競合 B 社の脆弱性診断サービスを一部の子会社で利用", "account_owner": "営業2部 佐藤"},
-  {"company_id": "C003", "company_name": "株式会社ツナグマーケット", "existing_customer": true,
-   "current_products": "クラウド回線・データセンター接続", "open_opportunity": "クラウド設定診断（提案中・停滞）",
+  {"company_id": "C003", "company_name": "株式会社クラウドノート", "existing_customer": true,
+   "current_products": "社内ヘルプデスクの運用代行", "open_opportunity": "クラウド設定診断（提案中・停滞）",
    "incumbent_security_vendor": "なし", "account_owner": "営業2部 鈴木"}
 ]
