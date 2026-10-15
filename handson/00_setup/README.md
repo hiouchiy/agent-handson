@@ -64,7 +64,7 @@
 |---|---|---|
 | 使う場面 | 通常はこちら | 講師から GitHub のリポジトリを案内されたとき |
 | 教材の置き場所 | 講師から受け取った ZIP（`agent-handson-main.zip`） | GitHub のリポジトリ（非公開） |
-| 教材のフォルダ名（`materials_folder`） | `agent-handson-main` | `agent-handson` |
+| 教材のフォルダ名（`materials_folder`） | `agent-handson-main` | `agent-handson-main`（ZIP と同じ名前になるよう、このフォルダ名でクローンする） |
 
 以降、ワークスペースに置いた `<教材のフォルダ>/handson/` を「自分の handson フォルダ」と呼びます。
 
@@ -99,14 +99,19 @@
 <講師から案内されたリポジトリの URL>
 
 ## やること
-1. /home/sandbox-agent/workspace の下にクローンする
+1. /home/sandbox-agent/workspace の下に、フォルダ名を agent-handson-main にしてクローンする
+   （git clone <リポジトリの URL> /home/sandbox-agent/workspace/agent-handson-main。
+    ZIP から展開したときと同じフォルダ名にするため。リポジトリの名前の agent-handson のままにしない）
 2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる
-   （participant.materials_folder は agent-handson にする）
+   （participant.materials_folder は agent-handson-main のまま）
 
 ## できたら
-/home/sandbox-agent/workspace/agent-handson/handson/ ができたことと、入れたメールアドレスを教えてください。
+/home/sandbox-agent/workspace/agent-handson-main/handson/ ができたことと、入れたメールアドレスを教えてください。
 ```
 
+> **フォルダ名に注意**: そのままクローンすると、フォルダ名がリポジトリの名前（`agent-handson`）になります。ZIP から展開したときと同じ
+> `agent-handson-main` にしておくと、以降の手順やプロンプトに出てくるフォルダ名（ワークスペースの取り込み先など）がそのまま使えます。
+>
 > Omnigent からリポジトリにアクセスするには、Sandbox から GitHub に接続できる必要があります。クローンできないときは、ZIP の方法に切り替えます。
 
 ## 3. 設定ファイルを編集してから、ワークスペースに取り込む
