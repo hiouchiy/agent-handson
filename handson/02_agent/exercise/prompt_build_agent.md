@@ -63,6 +63,8 @@ handson/README.md の「スコアリングエージェントの仕様」を満�
 - LLM は今日の日付を知らないので、各観点の入力に「今日の日付」（日本時間）を入れる
 - 02_try_agent では、エクスペリメントのトレースを _config.py の TRACE_TABLE（Delta テーブル）に同期する
   （mlflow.tracing.archival.enable_databricks_trace_archival。2 回目以降の実行で「すでに有効」のエラーになっても止めない）
+- 02_try_agent は、模範解答（handson/02_agent/solution/02_try_agent.py）と同じセルの構成にする。
+  トレースをコードで読み直さない（トレースの中身は、私がエクスペリメントの画面で確かめる）
 
 ## 参考にするもの
 - 仕様: handson/README.md の「スコアリングエージェントの仕様」、handson/02_agent/README.md の「エージェントの構成」
@@ -71,7 +73,7 @@ handson/README.md の「スコアリングエージェントの仕様」を満�
 
 ## できたら
 ワークスペースに反映して、02_try_agent を実行してよいか聞いてください。
-完了の条件: 1 社の採点結果（score_result）が返ってきて、トレースに AI Search の検索と 6 つの採点が残っていること。
+完了の条件: 02_try_agent が最後まで動き、1 社の採点結果（score_result）が表示されること。
 ```
 
 ## 動かしてみて、うまくいかないとき

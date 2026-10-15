@@ -56,5 +56,8 @@ Step 4 のデプロイでもそのまま使います（Model Serving にも、�
 入力の企業特性を書き換えて、点数がどう変わるかを試します（例: `existing_relationship` を「競合の MSS を導入済み」にする）。
 
 ## うまくいかないとき
-模範解答 [solution/](solution/) の `agent.py`・`memory.py`・`rubric.py` を `my_work/` にコピーするか、
-[solution/02_try_agent](solution/02_try_agent.py) をそのまま実行します（ウィジェット `agent_dir` が模範解答のフォルダを指しています）。
+- `SQL warehouse ID is required for accessing traces in UC tables` と出る: 以前に、トレースの保存先を Unity Catalog にした
+  同じ名前のエクスペリメント（`agent_handson_scoring`）が残っています。**エクスペリメント** の画面で、そのエクスペリメントの名前を
+  変えて（例: `agent_handson_scoring_old`）から、もう一度実行します。
+- それでも動かないとき: 模範解答 [solution/](solution/) の `agent.py`・`memory.py`・`rubric.py` を `my_work/` にコピーするか、
+  [solution/02_try_agent](solution/02_try_agent.py) をそのまま実行します（ウィジェット `agent_dir` が模範解答のフォルダを指しています）。

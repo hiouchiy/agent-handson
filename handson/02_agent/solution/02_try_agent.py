@@ -32,6 +32,10 @@ os.environ.update({"HANDSON_CATALOG": CATALOG, "HANDSON_SCHEMA": SCHEMA, "HANDSO
                    "HANDSON_LLM_ENDPOINT": LLM_ENDPOINT})
 experiment = mlflow.set_experiment(EXPERIMENT_PATH)
 print("エクスペリメント:", experiment.experiment_id)
+# 以前の版の教材で、トレースの保存先を Unity Catalog にした同じ名前のエクスペリメントが残っていると、トレースを同期できない
+if getattr(experiment, "trace_location", None):
+    raise RuntimeError(f"エクスペリメント {EXPERIMENT_PATH} は、トレースの保存先が Unity Catalog になっています。"
+                       "エクスペリメントの画面で名前を変えて（例: agent_handson_scoring_old）から、もう一度実行してください")
 
 # エクスペリメントのトレースを、自分のスキーマの Delta テーブルに同期する（15 分ごとに、自分の権限で動くジョブが作られる）。
 # デプロイしたエージェントは資格情報を持たずにエクスペリメントへトレースを送り、そこからこのテーブルに入る
