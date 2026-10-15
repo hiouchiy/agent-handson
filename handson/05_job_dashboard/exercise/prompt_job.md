@@ -23,6 +23,9 @@ handson/05_job_dashboard/README.md の「作るジョブ」の 3 つのタスク
 ## 気をつけること
 - task1: research.md は 1 ファイル 1 行で読み、会社IDはファイルのパス（_metadata.file_path）から取り出す。
   ai_query の出力の形は、responseFormat に JSON Schema（strict）で指定する（指定しないと JSON が崩れることがある）
+- task1: ai_query に failOnError を付けない（付けたときの戻り値のフィールド名が、スキルやドキュメントの説明と違うことがある）。
+  出力は try_parse_json で確かめ、JSON として読めない行は別のテーブルに分ける（模範解答と同じ）
+- タスクのノートブックは、模範解答（handson/05_job_dashboard/solution/ の task1〜3）と同じ書き方・同じ関数にする
 - task2: エンドポイントは databricks-sdk の api_client で /serving-endpoints/<名前>/invocations を呼び、会社IDは custom_inputs で渡す
 
 ## 参考にするもの
