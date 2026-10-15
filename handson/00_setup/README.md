@@ -62,8 +62,8 @@
 
 | | 基本: ZIP から | 別の方法: GitHub から |
 |---|---|---|
-| 使う場面 | 通常はこちら | 講師から GitHub のリポジトリを案内されたとき |
-| 教材の置き場所 | 講師から受け取った ZIP（`agent-handson-main.zip`） | GitHub のリポジトリ（非公開） |
+| 使う場面 | 通常はこちら | ZIP を添付できないとき（ファイルのアップロードが禁止されている場合など） |
+| 教材の置き場所 | 講師から受け取った ZIP（`agent-handson-main.zip`） | GitHub のリポジトリ（`https://github.com/hiouchiy/agent-handson.git`） |
 | 教材のフォルダ名（`materials_folder`） | `agent-handson-main` | `agent-handson-main`（ZIP と同じ名前になるよう、このフォルダ名でクローンする） |
 
 以降、ワークスペースに置いた `<教材のフォルダ>/handson/` を「自分の handson フォルダ」と呼びます。
@@ -91,16 +91,16 @@
 > instructor.catalog と instructor.shared_schema です。講師から案内された値を使ってください」
 
 ### 別の方法: GitHub から
-講師から、教材のリポジトリの URL を案内されたときの方法です。次のメッセージの `<...>` を、講師の案内に置き換えて送ります。
+ZIP を添付できないとき（ローカル PC から Databricks へのファイルのアップロードが禁止されている場合など）の方法です。次のメッセージを、そのまま送ります（書き換える箇所はありません）。
 
 ```
 ## やりたいこと
 次の Git リポジトリを、作業場所にクローンしてください。ワークスペースへの取り込みは、まだしません。
-<講師から案内されたリポジトリの URL>
+https://github.com/hiouchiy/agent-handson.git
 
 ## やること
 1. /home/sandbox-agent/workspace の下に、フォルダ名を agent-handson-main にしてクローンする
-   （git clone <リポジトリの URL> /home/sandbox-agent/workspace/agent-handson-main。
+   （git clone https://github.com/hiouchiy/agent-handson.git /home/sandbox-agent/workspace/agent-handson-main。
     ZIP から展開したときと同じフォルダ名にするため。リポジトリの名前の agent-handson のままにしない）
 2. databricks current-user me で私のメールアドレスを調べ、handson/settings.json の participant.user_email に入れる
    （participant.materials_folder は agent-handson-main のまま）
