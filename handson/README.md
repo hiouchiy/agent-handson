@@ -109,11 +109,12 @@ Omnigent と Databricks の画面を行き来しながら、ステップごと�
 ```
 handson/
 ├── README.md                 # このファイル
+├── DEV_GUIDE.md              # 開発の決まり（業務の言葉と技術の対応。Omnigent が要件を技術に置き換えるときに使う）
 ├── _config.py                # 共通の設定（カタログ・エンドポイント名など。参加者ごとの名前は自動で決まる）
 ├── requirements.txt          # ノートブックで入れるライブラリ（バージョン固定）
 ├── data/                     # ディープリサーチの結果（架空の 3 社）・過去の受注事例・自社 CRM
 ├── 00_setup/ … 05_job_dashboard/   # 各 Step（exercise/ と solution/）
-├── tools/run_notebook.sh     # ワークスペースのノートブックを実行して、結果を表示する（Omnigent が使う）
+├── tools/                    # run_notebook.sh（ノートブックを実行して結果を表示する。Omnigent が使う）・make_rubric_doc.py（採点基準の表を作る）
 ├── my_work/                  # 参加者が Omnigent と作るコードの置き場所（最初は空）
 └── instructor/               # 講師向け（事前準備・設計メモ・評価データの解説）
 ```

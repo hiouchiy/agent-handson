@@ -207,7 +207,7 @@ Omnigent とやり取りし続けるので、Sandbox が止まりにくくなり
 ## やりたいこと
 これから Databricks のハンズオンを行います。教材を読んで、全体の流れをつかんでください。
 教材は /home/sandbox-agent/workspace の下の、handson/settings.json の participant.materials_folder のフォルダの handson/ にあります。
-handson/README.md と、各 Step の README.md を読んでください。
+handson/README.md と、各 Step の README.md と、開発の決まり（handson/DEV_GUIDE.md）を読んでください。
 
 ## 作業のルール（ハンズオンの最後まで守ってください）
 1. 設定値: 環境や私によって変わる値（ワークスペース・カタログ・スキーマ・メールアドレス・エンドポイント名など）は、
@@ -236,6 +236,7 @@ handson/README.md と、各 Step の README.md を読んでください。
    - python3 -m py_compile で、構文の誤りがないことを確かめる
    - 失敗して直したときは、同じ種類のバグがほかの場所にないかも見直してから、もう一度聞く
 7. 見切り: 自分が書いたコードが 1 回直しても動かないときは、それ以上直さずに私に知らせる（模範解答に切り替えて先に進む）
+8. 開発の決まり: 私は業務の言葉で要件を書きます。どの技術で実現するかは、handson/DEV_GUIDE.md の対応表と決まりに必ず従って決める
 
 ## できたら
 全体の流れを 5 行で要約してください。あわせて、Databricks のエージェントスキル（databricks-core など）が使える状態かも教えてください。
