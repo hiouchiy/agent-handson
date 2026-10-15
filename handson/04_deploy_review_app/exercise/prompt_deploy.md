@@ -14,6 +14,7 @@ my_work のエージェントを、Model Serving にデプロイするノート�
   3. databricks.agents.deploy で Model Serving にデプロイし、エンドポイント名と Review App の URL を表示する
   4. エンドポイントの準備ができるまで待つ
   5. 評価データの 1 件目をエンドポイントに送り、score・tier・next_action を表示する
+  6. 最後のセルで、TRACE_TABLE の新しい順に 10 件（評価・フィードバックの一覧も）を表示する（同期を待ってから実行する）
 
 ## 決まりごと
 - エージェント本体（agent.py・rubric.py・memory.py）は変えない
@@ -24,9 +25,8 @@ my_work のエージェントを、Model Serving にデプロイするノート�
   Memory は呼び出したユーザーとして読むので、ユーザーの認証（スコープ unity-catalog）も付ける
 
 ## 気をつけること
-- デプロイ後のトレースを Unity Catalog のテーブルに書くには、自分の個人用アクセストークン（有効期限 3 日）を Secret に入れ、
-  デプロイの環境変数で DATABRICKS_TOKEN（Secret の参照）・DATABRICKS_AUTH_TYPE=pat・DATABRICKS_HOST を渡す
-  （エンドポイント自身の ID にはトレースのテーブルの権限がない。AUTH_TYPE を pat にしないとトークンが使われない）
+- 個人用アクセストークンなどの資格情報は、エンドポイントに渡さない。デプロイ後のトレースはエクスペリメントに入り、
+  Step 2 で有効にした同期で Delta テーブル（_config.py の TRACE_TABLE）に入る
 - 記録するときに agent.py を読み込むので、my_work を sys.path に入れておく
 - agents.deploy は古いバージョンを流量 0% で残すので、準備ができたら今回のバージョン以外を外す
 

@@ -29,9 +29,8 @@ dbutils.widgets.text("agent_dir", "../../02_agent/solution", "エージェント
 AGENT_DIR = os.path.abspath(dbutils.widgets.get("agent_dir"))
 
 os.environ.update({"HANDSON_CATALOG": CATALOG, "HANDSON_SCHEMA": SCHEMA, "HANDSON_CASE_INDEX": CASE_INDEX,
-                   "HANDSON_LLM_ENDPOINT": LLM_ENDPOINT,
-                   "MLFLOW_TRACING_SQL_WAREHOUSE_ID": WAREHOUSE_ID})
-mlflow.set_experiment(EXPERIMENT_PATH)  # Step 2 で作ったエクスペリメント（トレースは Unity Catalog に入る）
+                   "HANDSON_LLM_ENDPOINT": LLM_ENDPOINT})
+mlflow.set_experiment(EXPERIMENT_PATH)  # Step 2 で作ったエクスペリメント（トレースは Delta テーブルにも同期される）
 
 sys.path.insert(0, AGENT_DIR)
 import rubric  # noqa: E402

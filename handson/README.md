@@ -25,7 +25,7 @@ Omnigent と Databricks の画面を行き来しながら、ステップごと�
    ▼
  タスク3  結果を Delta テーブルに書く   ──▶ customer_product_score ──▶ AI/BI ダッシュボード
 
- MLflow: トレース（Unity Catalog の Delta テーブルに OpenTelemetry 形式で保存）・オフライン評価・Review App
+ MLflow: トレース（エクスペリメントに集め、Unity Catalog の Delta テーブルに同期）・オフライン評価・Review App
 ```
 
 | 使う機能 | このハンズオンでの使い方 |
@@ -33,7 +33,7 @@ Omnigent と Databricks の画面を行き来しながら、ステップごと�
 | AI Search（旧 Vector Search） | 過去の受注事例を、企業特性に近い順に探す |
 | Managed Agent Memory | 採点のルール、会社ごとの申し送り、過去の採点の履歴を長期記憶として持つ |
 | LangGraph ＋ MLflow | エージェントを組み、MLflow のモデルとして記録する |
-| MLflow のトレース（Unity Catalog に保存） | エージェントの各処理を記録し、エクスペリメントと SQL の両方から見る |
+| MLflow のトレース（Delta テーブルに同期） | エージェントの各処理を記録し、エクスペリメントと SQL の両方から見る |
 | MLflow のオフライン評価 | 評価データで品質を測り、NG を直して全件 OK にする |
 | Model Serving ＋ Review App | エージェントを API として公開し、人のフィードバックを集める |
 | Lakeflow Jobs ＋ AI/BI ダッシュボード | 毎朝の採点を自動化し、結果を営業が見られるようにする |

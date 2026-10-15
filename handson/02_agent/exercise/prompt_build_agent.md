@@ -61,7 +61,8 @@ handson/README.md の「スコアリングエージェントの仕様」を満�
 - Model Serving の中では、Memory を「呼び出したユーザー本人の資格情報（OBO）」で読む。トークンはリクエストごとに取り、
   取れなければエラーにする（ほかの資格情報に切り替えない）
 - LLM は今日の日付を知らないので、各観点の入力に「今日の日付」（日本時間）を入れる
-- 02_try_agent のエクスペリメントは、トレースの保存先を Unity Catalog（自分のスキーマ）にして作る
+- 02_try_agent では、エクスペリメントのトレースを _config.py の TRACE_TABLE（Delta テーブル）に同期する
+  （mlflow.tracing.archival.enable_databricks_trace_archival。2 回目以降の実行で「すでに有効」のエラーになっても止めない）
 
 ## 参考にするもの
 - 仕様: handson/README.md の「スコアリングエージェントの仕様」、handson/02_agent/README.md の「エージェントの構成」

@@ -3,7 +3,7 @@
 # MAGIC # Step 4 Model Serving にデプロイし、Review App で人のフィードバックを集める（模範解答）
 # MAGIC 1. エージェントを MLflow に記録する（model-from-code）→ Unity Catalog に登録する
 # MAGIC 2. `databricks.agents.deploy` で Model Serving にデプロイする（Review App も一緒にできる）
-# MAGIC 3. エンドポイントを呼んでみる。トレースは Step 2 と同じ Unity Catalog のテーブルに入る
+# MAGIC 3. エンドポイントを呼んでみる。トレースは Step 2 と同じエクスペリメントに入り、同じ Delta テーブルに同期される
 # MAGIC 4. Review App で採点結果を見て、👍／👎 とコメントを付ける
 # MAGIC
 # MAGIC **認証の考え方**
@@ -11,6 +11,9 @@
 # MAGIC |---|---|
 # MAGIC | 基盤モデル・埋め込みモデル・AI Search のインデックス | エンドポイントの資格情報（デプロイ時に「使うリソース」として宣言する） |
 # MAGIC | Managed Agent Memory | 呼び出したユーザー本人の資格情報（OBO）。Memory は「使うリソース」として宣言できないため |
+# MAGIC | トレース | エンドポイントの資格情報でエクスペリメントに送る。Delta テーブルへの同期は、Step 2 で有効にした自分のジョブが行う |
+# MAGIC
+# MAGIC どれも、個人用アクセストークンなどの資格情報をエンドポイントに渡す必要はありません。
 
 # COMMAND ----------
 
@@ -36,9 +39,8 @@ sys.path.insert(0, AGENT_DIR)  # 記録するときに agent.py を読み込む�
 
 AGENT_ENV = {"HANDSON_CATALOG": CATALOG, "HANDSON_SCHEMA": SCHEMA, "HANDSON_CASE_INDEX": CASE_INDEX, "HANDSON_LLM_ENDPOINT": LLM_ENDPOINT}
 os.environ.update(AGENT_ENV)
-os.environ["MLFLOW_TRACING_SQL_WAREHOUSE_ID"] = WAREHOUSE_ID
 mlflow.set_registry_uri("databricks-uc")
-mlflow.set_experiment(EXPERIMENT_PATH)  # デプロイ後のトレースも、このエクスペリメント（Unity Catalog のテーブル）に入る
+mlflow.set_experiment(EXPERIMENT_PATH)  # デプロイ後のトレースも、このエクスペリメントに入る
 
 # COMMAND ----------
 
@@ -84,48 +86,24 @@ print("登録しました:", MODEL_NAME, "バージョン", version)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 2. トレースを書き込むための資格情報を Secret に入れる
-# MAGIC エンドポイントがトレースを Unity Catalog のテーブル（`scoring_otel_*`）に書くときは、そのテーブルに
-# MAGIC `MODIFY` と `SELECT` を持つユーザーの資格情報が必要です（エンドポイント自身の ID には権限がありません）。
-# MAGIC テーブルの持ち主である自分の個人用アクセストークンを作って Secret に入れ、デプロイ時に環境変数
-# MAGIC `DATABRICKS_TOKEN` として渡します。トークンはハンズオンの間だけ使えれば十分なので、有効期限を短くします。
-
-# COMMAND ----------
-
-from databricks.sdk import WorkspaceClient
-
-w = WorkspaceClient()
-SECRET_SCOPE = f"agent_handson_{PARTICIPANT}"
-if SECRET_SCOPE not in [s.name for s in w.secrets.list_scopes()]:
-    w.secrets.create_scope(SECRET_SCOPE)
-token = w.tokens.create(comment="agent handson: endpoint tracing", lifetime_seconds=3 * 24 * 3600)
-w.secrets.put_secret(SECRET_SCOPE, "tracing_token", string_value=token.token_value)
-print("Secret に入れました:", f"{SECRET_SCOPE}/tracing_token")
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC ## 3. デプロイする（15〜20 分ほどかかります）
+# MAGIC ## 2. デプロイする（15〜20 分ほどかかります）
 # MAGIC 待っている間に、エンドポイントの画面（**サービング** → 自分のエンドポイント）でデプロイの進み具合を見られます。
 
 # COMMAND ----------
 
 from databricks import agents
+from databricks.sdk import WorkspaceClient
 
-deployment = agents.deploy(
-    MODEL_NAME, int(version), endpoint_name=ENDPOINT_NAME, scale_to_zero=True,
-    # トレースは DATABRICKS_TOKEN（自分の資格情報）で Unity Catalog のテーブルに書く。
-    # DATABRICKS_AUTH_TYPE を pat にしないと、Serving の中ではエンドポイント自身の資格情報が優先される。
-    # pat にすると接続先を自動で受け取らなくなるので、DATABRICKS_HOST も渡す
-    environment_vars={**AGENT_ENV, "DATABRICKS_TOKEN": f"{{{{secrets/{SECRET_SCOPE}/tracing_token}}}}",
-                      "DATABRICKS_AUTH_TYPE": "pat", "DATABRICKS_HOST": w.config.host})
+w = WorkspaceClient()
+deployment = agents.deploy(MODEL_NAME, int(version), endpoint_name=ENDPOINT_NAME, scale_to_zero=True,
+                           environment_vars=AGENT_ENV)
 print("エンドポイント:", deployment.endpoint_name)
 print("Review App:", deployment.review_app_url)
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 4. エンドポイントを呼ぶ
+# MAGIC ## 3. エンドポイントを呼ぶ
 # MAGIC エンドポイントの準備ができるまで待ってから実行します（状態が「準備完了」になっていること）。
 
 # COMMAND ----------
@@ -164,9 +142,18 @@ print(sr["company_id"], sr["score"], sr["tier"], sr["next_action"])
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## 5. Review App で人のフィードバックを付ける
+# MAGIC ## 4. Review App で人のフィードバックを付ける
 # MAGIC 1. 上で表示した Review App の URL を開く（チャット画面）
 # MAGIC 2. 入力欄に、評価データの企業特性を貼り付けて送る
 # MAGIC    （Review App から呼ぶときは会社IDを `custom_inputs` で渡せないので、エージェントは本文の `company_id` を使う）
 # MAGIC 3. 回答に 👍／👎 を付け、理由をコメントに書く（例: 「次のアクションに競合の契約時期が入っていない」）
 # MAGIC 4. エクスペリメント → **トレース** で、付けたフィードバックが評価（assessment）としてトレースに残っていることを確認する
+# MAGIC 5. 15 分ほど待ってから次のセルを実行し、デプロイ後のトレースとフィードバックが Delta テーブルにも同期されたことを確かめる
+
+# COMMAND ----------
+
+display(spark.sql(f"""
+  SELECT trace_id, request_time, state, request_preview,
+         transform(assessments, a -> concat(a.name, ': ', coalesce(a.feedback.value, a.expectation.value))) AS assessments
+  FROM {TRACE_TABLE}
+  ORDER BY request_time DESC LIMIT 10"""))

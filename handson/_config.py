@@ -38,7 +38,7 @@ AI_SEARCH_ENDPOINT = _inst["ai_search_endpoint"]
 LLM_ENDPOINT = _inst["llm_endpoint"]                  # スコアリングに使う基盤モデル
 EXTRACT_LLM_ENDPOINT = _inst["extract_llm_endpoint"]  # ジョブで企業特性を抜き出す基盤モデル（ai_query）
 EMBEDDING_ENDPOINT = _inst["embedding_endpoint"]
-WAREHOUSE_ID = _inst["warehouse_id"]                  # トレースの表示・ダッシュボードに使う SQL ウェアハウス
+WAREHOUSE_ID = _inst["warehouse_id"]                  # ダッシュボードなどに使う SQL ウェアハウス
 
 # 全員で共有するスキーマ（事前準備で、過去の受注事例のテーブルと AI Search のインデックスを作っておく）
 SHARED_SCHEMA = _inst["shared_schema"]
@@ -62,6 +62,7 @@ RESEARCH_VOLUME = f"/Volumes/{CATALOG}/{SCHEMA}/research"
 MODEL_NAME = f"{FQ}.scoring_agent"
 ENDPOINT_NAME = f"scoring-agent-{PARTICIPANT.replace('_', '-')}"[:63]
 EXPERIMENT_PATH = f"/Users/{USER_NAME}/agent_handson_scoring"
+TRACE_TABLE = f"{FQ}.scoring_traces"  # エクスペリメントのトレースを同期する Delta テーブル
 
 print(f"設定ファイル: {SETTINGS_PATH}\n参加者: {USER_NAME}\nスキーマ: {FQ}\n共有のインデックス: {CASE_INDEX}\n"
-      f"Memory: {MEMORY_STORE}\nエンドポイント: {ENDPOINT_NAME}\nエクスペリメント: {EXPERIMENT_PATH}")
+      f"Memory: {MEMORY_STORE}\nエンドポイント: {ENDPOINT_NAME}\nエクスペリメント: {EXPERIMENT_PATH}\nトレースのテーブル: {TRACE_TABLE}")

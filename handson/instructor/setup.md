@@ -15,7 +15,7 @@
 | Omnigent（ワークスペースのプレビュー） | 全体 | `<ワークスペースの URL>/omnigent` が開けること |
 | Databricks Sandbox（ワークスペースのプレビュー） | 全体（Omnigent の実行場所） | Omnigent の New session で **Sandbox** を選べること |
 | Managed Agent Memory（ワークスペースのプレビュー: **Managed Memory for Agents**） | 1〜5 | Step 1 の模範解答で Memory（`agent_memory`）を作成できること |
-| MLflow のトレースを Unity Catalog に保存する機能 | 2〜5 | Step 2 の模範解答で `scoring_otel_spans` テーブルができること |
+| MLflow のトレースを Delta テーブルに同期する機能 | 2〜5 | Step 2 の模範解答を実行して 15 分ほどあとに、`scoring_traces` テーブルができること |
 | Model Serving のユーザー代理（On-Behalf-Of）認証 | 4〜5 | Step 4 の模範解答のデプロイが成功すること |
 | Genie Code（Databricks Assistant のエージェントモード） | 3 | ノートブックで Assistant のエージェントモードを使えること |
 | Omnigent の中から GitHub と PyPI・Databricks のスキル配布元（GitHub）に出られること | 0 | Step 0 の手順 4 で `databricks aitools install` が成功すること |
@@ -90,7 +90,6 @@
 - 基盤モデルのエンドポイント（`databricks-claude-sonnet-5`、`databricks-gpt-5-4-mini`、`databricks-gte-large-en`）: `CAN QUERY`
 - AI Search のエンドポイント: `CAN_USE`（事前準備でワークスペースの `users` に付ける）
 - Model Serving のエンドポイントを作成できること
-- 個人用アクセストークンを作れること、Secret スコープを作れること（Step 4 で、デプロイ後のトレースを書くために使う）
 - ジョブを作成できること
 
 ## 4. 事前の通し確認

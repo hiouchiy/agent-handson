@@ -25,7 +25,6 @@ MLflow で、エージェントのオフライン評価をするノートブッ�
 ## 気をつけること
 - meets_expected_points は MLflow 組み込みの ExpectationsGuidelines を使い、期待値の expected_points を guidelines として渡す。
   ジャッジには、出力を {"score_result": ...} の JSON の文字列にして渡す（dict のままだと中の項目を読めないことがある）
-- トレースを読むため、環境変数 MLFLOW_TRACING_SQL_WAREHOUSE_ID に _config.py の WAREHOUSE_ID を入れる
 
 ## 参考にするもの
 - 評価データとスコアラー: handson/03_evaluation/README.md の「評価データ」「スコアラー」
