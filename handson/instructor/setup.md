@@ -23,6 +23,10 @@
 > **リージョンに注意**: Omnigent の実行場所（Sandbox）は、対応しているリージョンが限られています。
 > ハンズオンのワークスペースのリージョンが対応しているか、事前に確認してください。
 
+> **お客様のワークスペースで行う準備は、別の資料「事前準備の手順書」（`agent-handson-prework`）にまとめてあります。**
+> プレビューの有効化・カタログ・SQL ウェアハウス・AI Search のエンドポイントとインデックス・権限の確認までを、
+> お客様の管理者に、ハンズオンの前に手で済ませてもらいます（インデックスの同期に時間がかかるため）。この節は、その中身の説明です。
+
 ## 2. 共有のリソースを作る
 
 | リソース | 作り方 | `_config.py` の設定 |
@@ -81,10 +85,10 @@
 ## 3. 参加者に必要な権限
 - 教材: ZIP の場合は、予備として置く共有の Volume `materials` の `READ VOLUME`（上の「教材の配り方」）。GitHub の場合は、教材のリポジトリの読み取り
 - カタログ: `USE CATALOG`、`CREATE SCHEMA`（自分のスキーマを作り、その中に表・Volume・Memory・モデルを作る）
-- 共有スキーマ `agent_handson_shared`: `USE SCHEMA`・`SELECT`（代表者が Step 0 で `account users` に付ける）
+- 共有スキーマ `agent_handson_shared`: `USE SCHEMA`・`SELECT`（事前準備で `account users` に付ける）
 - 代表者だけ: AI Search のエンドポイントを作れること、カタログと共有スキーマに権限を付けられること（カタログの所有者か `MANAGE` を持つ人）
 - 基盤モデルのエンドポイント（`databricks-claude-sonnet-5`、`databricks-gpt-5-4-mini`、`databricks-gte-large-en`）: `CAN QUERY`
-- AI Search のエンドポイント: `CAN_USE`（代表者が Step 0 でワークスペースの `users` に付ける）
+- AI Search のエンドポイント: `CAN_USE`（事前準備でワークスペースの `users` に付ける）
 - Model Serving のエンドポイントを作成できること
 - 個人用アクセストークンを作れること、Secret スコープを作れること（Step 4 で、デプロイ後のトレースを書くために使う）
 - ジョブを作成できること

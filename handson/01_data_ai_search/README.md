@@ -2,7 +2,7 @@
 
 ## このステップでやること
 1. Omnigent に、自分のデータを用意するノートブックを作ってもらい、実行する（Omnigent に実行してもらうか、自分で実行する）
-2. Step 0 で代表者が作った **共有の AI Search（旧 Vector Search）インデックス** を Databricks の画面で開き、検索してみる
+2. 事前準備で作ってある **共有の AI Search（旧 Vector Search）インデックス** を Databricks の画面で開き、検索してみる
 
 ## 用意するデータ
 
@@ -11,7 +11,7 @@
 | 自社 CRM（3 社） | `data/crm_accounts.json` | `crm_account` テーブル | 自分のスキーマ |
 | ディープリサーチの結果（3 社） | `data/research/<会社ID>/research.md` | Volume `research` の同じフォルダ構成 | 自分のスキーマ |
 | 採点の共通ルール | — | Managed Agent Memory（`agent_memory`）の `shared` の記憶 | 自分のスキーマ |
-| 過去の受注事例（10 件） | `data/reference_cases.json` | `reference_case` テーブル・`reference_case_index` インデックス | **共有スキーマ（代表者が Step 0 で作成済み）** |
+| 過去の受注事例（10 件） | `data/reference_cases.json` | `reference_case` テーブル・`reference_case_index` インデックス | **共有スキーマ（事前準備で作成済み）** |
 
 ## 演習
 
@@ -49,4 +49,4 @@
 ## うまくいかないとき
 - 1-1: 模範解答 [solution/01_prepare_data](solution/01_prepare_data.py) をそのまま実行します。
 - 1-1 で Memory（`agent_memory`）を作れないとき: ワークスペースのプレビュー **Managed Memory for Agents** が有効になっていない可能性があります。講師に確かめてもらいます。
-- 1-2・1-3: 共有のインデックスが見つからない・検索できないときは、代表者に Step 0 の手順 6 が終わっているか、権限が付いているかを確かめてもらいます。
+- 1-2・1-3: 共有のインデックスが見つからない・検索できないときは、事前準備（または Step 0 の手順 6 の予備の手順）が終わっているか、権限が付いているかを確かめてもらいます。

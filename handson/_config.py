@@ -40,7 +40,7 @@ EXTRACT_LLM_ENDPOINT = _inst["extract_llm_endpoint"]  # ジョブで企業特性
 EMBEDDING_ENDPOINT = _inst["embedding_endpoint"]
 WAREHOUSE_ID = _inst["warehouse_id"]                  # トレースの表示・ダッシュボードに使う SQL ウェアハウス
 
-# 全員で共有するスキーマ（代表者が Step 0 で、過去の受注事例のテーブルと AI Search のインデックスを作る）
+# 全員で共有するスキーマ（事前準備で、過去の受注事例のテーブルと AI Search のインデックスを作っておく）
 SHARED_SCHEMA = _inst["shared_schema"]
 SHARED_FQ = f"{CATALOG}.{SHARED_SCHEMA}"
 CASE_TABLE = f"{SHARED_FQ}.reference_case"
